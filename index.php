@@ -21,212 +21,238 @@ $sparepart_list = fetch_all($result_sparepart);
 ?>
 
 <!-- Hero Section -->
-<section class="bg-primary text-white py-5 mb-5 animate__animated animate__fadeIn">
+<section class="hero-section d-flex align-items-center">
     <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6" data-aos="fade-right">
-                <h1 class="display-4 fw-bold"><?php echo $profil['nama_bengkel']; ?></h1>
-                <p class="lead"><?php echo $profil['deskripsi']; ?></p>
-                <div class="mt-4">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6 text-white" data-aos="fade-right">
+                <h1 class="display-3 fw-bold mb-4"><?php echo $profil['nama_bengkel']; ?></h1>
+                <p class="lead mb-4"><?php echo $profil['deskripsi']; ?></p>
+                <div class="d-flex flex-wrap gap-3">
                     <?php if(!isset($_SESSION['id_user'])): ?>
-                        <a href="register.php" class="btn btn-light btn-lg me-2">
-                            <i class="bi bi-person-plus"></i> Daftar Sekarang
+                        <a href="register.php" class="btn btn-light btn-lg rounded-pill px-5 py-3 fw-semibold">
+                            <i class="bi bi-person-plus me-2"></i>Daftar Sekarang
                         </a>
                     <?php endif; ?>
-                    <a href="booking.php" class="btn btn-outline-light btn-lg">
-                        <i class="bi bi-calendar-check"></i> Booking Service
+                    <a href="booking.php" class="btn btn-outline-light btn-lg rounded-pill px-5 py-3 fw-semibold">
+                        <i class="bi bi-calendar-check me-2"></i>Booking Service
                     </a>
                 </div>
             </div>
-            <div class="col-md-6" data-aos="fade-left">
-                <img src="assets/images/bengkel-hero.jpg" alt="Bengkel Mobil" class="img-fluid rounded-3 shadow" onerror="this.src='https://via.placeholder.com/600x400?text=Bengkel+Mobil'">
+            <div class="col-lg-6" data-aos="fade-left">
+                <img src="assets/images/bengkel-hero.jpg" alt="Bengkel Mobil" class="img-fluid rounded-4 shadow-glow" onerror="this.src='https://via.placeholder.com/600x400?text=Bengkel+Mobil'">
             </div>
         </div>
     </div>
 </section>
 
 <!-- Statistik Section -->
-<section class="container mb-5">
-    <div class="row text-center">
-        <div class="col-md-3 mb-3" data-aos="zoom-in" data-aos-delay="100">
-            <div class="card bg-primary text-white p-3">
+<section class="container py-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
+            <div class="stat-card bg-gradient-primary">
                 <i class="bi bi-tools display-1"></i>
-                <h3>10+</h3>
-                <p>Jasa Service</p>
+                <h3 class="fw-bold mt-3">10+</h3>
+                <p class="mb-0">Jasa Service</p>
             </div>
         </div>
-        <div class="col-md-3 mb-3" data-aos="zoom-in" data-aos-delay="200">
-            <div class="card bg-success text-white p-3">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="200">
+            <div class="stat-card bg-gradient-success">
                 <i class="bi bi-box display-1"></i>
-                <h3>50+</h3>
-                <p>Sparepart</p>
+                <h3 class="fw-bold mt-3">50+</h3>
+                <p class="mb-0">Sparepart</p>
             </div>
         </div>
-        <div class="col-md-3 mb-3" data-aos="zoom-in" data-aos-delay="300">
-            <div class="card bg-warning text-white p-3">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="300">
+            <div class="stat-card bg-gradient-warning">
                 <i class="bi bi-people display-1"></i>
-                <h3>1000+</h3>
-                <p>Pelanggan</p>
+                <h3 class="fw-bold mt-3">1000+</h3>
+                <p class="mb-0">Pelanggan</p>
             </div>
         </div>
-        <div class="col-md-3 mb-3" data-aos="zoom-in" data-aos-delay="400">
-            <div class="card bg-info text-white p-3">
+        <div class="col-md-3" data-aos="zoom-in" data-aos-delay="400">
+            <div class="stat-card bg-gradient-info">
                 <i class="bi bi-calendar-check display-1"></i>
-                <h3>500+</h3>
-                <p>Booking</p>
+                <h3 class="fw-bold mt-3">500+</h3>
+                <p class="mb-0">Booking</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Jasa Service Section -->
-<section class="container mb-5">
-    <h2 class="text-center mb-4" data-aos="fade-up">Layanan Jasa Service</h2>
-    <p class="text-center mb-5" data-aos="fade-up">Kami menyediakan berbagai layanan service untuk mobil Anda</p>
-    
-    <div class="row">
+<section class="container py-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="display-5 fw-bold">Layanan Jasa Service</h2>
+        <p class="lead text-muted">Kami menyediakan berbagai layanan service untuk mobil Anda</p>
+    </div>
+
+    <div class="row g-4">
         <?php foreach($jasa_list as $jasa): ?>
-        <div class="col-md-3 mb-4" data-aos="flip-left" data-aos-delay="<?php echo $jasa['id_jasa'] * 50; ?>">
-            <div class="card h-100 shadow-sm hover-card">
-                <img src="assets/images/jasa/<?php echo $jasa['gambar']; ?>" class="card-img-top" alt="<?php echo $jasa['nama_jasa']; ?>" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=Jasa'">
+        <div class="col-md-3" data-aos="flip-left" data-aos-delay="<?php echo $jasa['id_jasa'] * 50; ?>">
+            <div class="card service-card h-100 border-0 shadow-sm">
+                <div class="card-img-top position-relative overflow-hidden">
+                    <img src="assets/images/jasa/<?php echo $jasa['gambar']; ?>" class="img-fluid" alt="<?php echo $jasa['nama_jasa']; ?>" onerror="this.src='https://via.placeholder.com/300x200?text=Jasa'">
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title"><?php echo $jasa['nama_jasa']; ?></h5>
-                    <p class="card-text text-truncate"><?php echo $jasa['deskripsi']; ?></p>
-                    <p class="text-primary fw-bold"><?php echo rupiah($jasa['harga']); ?></p>
-                    <p class="text-muted"><i class="bi bi-clock"></i> <?php echo $jasa['estimasi_waktu']; ?></p>
-                    <a href="detail.php?type=jasa&id=<?php echo $jasa['id_jasa']; ?>" class="btn btn-primary w-100">Lihat Detail</a>
+                    <h5 class="card-title fw-bold"><?php echo $jasa['nama_jasa']; ?></h5>
+                    <p class="card-text text-muted"><?php echo $jasa['deskripsi']; ?></p>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="h5 text-primary fw-bold"><?php echo rupiah($jasa['harga']); ?></span>
+                        <span class="badge bg-light text-dark"><i class="bi bi-clock me-1"></i><?php echo $jasa['estimasi_waktu']; ?></span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pb-3">
+                    <a href="detail.php?type=jasa&id=<?php echo $jasa['id_jasa']; ?>" class="btn btn-outline-primary w-100 rounded-pill">Lihat Detail</a>
                 </div>
             </div>
         </div>
         <?php endforeach; ?>
     </div>
-    
-    <div class="text-center mt-3">
-        <a href="jasa.php" class="btn btn-outline-primary">Lihat Semua Jasa <i class="bi bi-arrow-right"></i></a>
+
+    <div class="text-center mt-5">
+        <a href="jasa.php" class="btn btn-primary rounded-pill px-5 py-3 fw-semibold">
+            Lihat Semua Jasa <i class="bi bi-arrow-right ms-2"></i>
+        </a>
     </div>
 </section>
 
 <!-- Sparepart Populer Section -->
-<section class="container mb-5 bg-light py-5 rounded">
-    <h2 class="text-center mb-4" data-aos="fade-up">Sparepart Populer</h2>
-    <p class="text-center mb-5" data-aos="fade-up">Sparepart berkualitas dengan harga terjangkau</p>
-    
-    <div class="row">
-        <?php foreach($sparepart_list as $sparepart): ?>
-        <div class="col-md-3 mb-4" data-aos="fade-up" data-aos-delay="<?php echo $sparepart['id_sparepart'] * 50; ?>">
-            <div class="card h-100 shadow-sm">
-                <img src="assets/images/sparepart/<?php echo $sparepart['gambar']; ?>" class="card-img-top" alt="<?php echo $sparepart['nama_sparepart']; ?>" style="height: 200px; object-fit: cover;" onerror="this.src='https://via.placeholder.com/300x200?text=Sparepart'">
-                <div class="card-body">
-                    <h5 class="card-title"><?php echo $sparepart['nama_sparepart']; ?></h5>
-                    <p class="card-text text-truncate"><?php echo $sparepart['deskripsi']; ?></p>
-                    <p class="text-primary fw-bold"><?php echo rupiah($sparepart['harga_jual']); ?></p>
-                    <p class="text-muted">
-                        <i class="bi bi-box"></i> Stok: <?php echo $sparepart['stok']; ?> | 
-                        <i class="bi bi-tag"></i> <?php echo $sparepart['merk']; ?>
-                    </p>
-                    <a href="detail.php?type=sparepart&id=<?php echo $sparepart['id_sparepart']; ?>" class="btn btn-primary w-100">Lihat Detail</a>
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Sparepart Populer</h2>
+            <p class="lead text-muted">Sparepart berkualitas dengan harga terjangkau</p>
+        </div>
+
+        <div class="row g-4">
+            <?php foreach($sparepart_list as $sparepart): ?>
+            <div class="col-md-3" data-aos="fade-up" data-aos-delay="<?php echo $sparepart['id_sparepart'] * 50; ?>">
+                <div class="card sparepart-card h-100 border-0 shadow-sm">
+                    <div class="card-img-top position-relative overflow-hidden">
+                        <img src="assets/images/sparepart/<?php echo $sparepart['gambar']; ?>" class="img-fluid" alt="<?php echo $sparepart['nama_sparepart']; ?>" onerror="this.src='https://via.placeholder.com/300x200?text=Sparepart'">
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold"><?php echo $sparepart['nama_sparepart']; ?></h5>
+                        <p class="card-text text-muted"><?php echo $sparepart['deskripsi']; ?></p>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <span class="h5 text-primary fw-bold"><?php echo rupiah($sparepart['harga_jual']); ?></span>
+                            <span class="badge bg-light text-dark"><i class="bi bi-box me-1"></i>Stok: <?php echo $sparepart['stok']; ?></span>
+                        </div>
+                        <p class="mt-2 mb-0"><i class="bi bi-tag me-1"></i><?php echo $sparepart['merk']; ?></p>
+                    </div>
+                    <div class="card-footer bg-white border-0 pb-3">
+                        <a href="detail.php?type=sparepart&id=<?php echo $sparepart['id_sparepart']; ?>" class="btn btn-outline-primary w-100 rounded-pill">Lihat Detail</a>
+                    </div>
                 </div>
             </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
-    
-    <div class="text-center mt-3">
-        <a href="produk.php" class="btn btn-outline-primary">Lihat Semua Sparepart <i class="bi bi-arrow-right"></i></a>
+
+        <div class="text-center mt-5">
+            <a href="produk.php" class="btn btn-primary rounded-pill px-5 py-3 fw-semibold">
+                Lihat Semua Sparepart <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
     </div>
 </section>
 
 <!-- Keunggulan Section -->
-<section class="container mb-5">
-    <h2 class="text-center mb-5" data-aos="fade-up">Kenapa Memilih Kami?</h2>
-    
-    <div class="row">
-        <div class="col-md-4 mb-4" data-aos="fade-right">
-            <div class="text-center">
-                <i class="bi bi-tools display-1 text-primary"></i>
-                <h4>Mekanik Profesional</h4>
-                <p>Tim mekanik kami berpengalaman dan bersertifikat</p>
+<section class="container py-5">
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="display-5 fw-bold">Kenapa Memilih Kami?</h2>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-right">
+            <div class="feature-card text-center p-4 rounded-4 shadow-sm">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="bi bi-tools fs-1"></i>
+                </div>
+                <h4 class="fw-bold">Mekanik Profesional</h4>
+                <p class="text-muted">Tim mekanik kami berpengalaman dan bersertifikat</p>
             </div>
         </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up">
-            <div class="text-center">
-                <i class="bi bi-shield-check display-1 text-primary"></i>
-                <h4>Garansi Service</h4>
-                <p>Semua service mendapatkan garansi 1 bulan</p>
+        <div class="col-md-4" data-aos="fade-up">
+            <div class="feature-card text-center p-4 rounded-4 shadow-sm">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="bi bi-shield-check fs-1"></i>
+                </div>
+                <h4 class="fw-bold">Garansi Service</h4>
+                <p class="text-muted">Semua service mendapatkan garansi 1 bulan</p>
             </div>
         </div>
-        <div class="col-md-4 mb-4" data-aos="fade-left">
-            <div class="text-center">
-                <i class="bi bi-clock-history display-1 text-primary"></i>
-                <h4>Tepat Waktu</h4>
-                <p>Pengerjaan cepat dan sesuai estimasi waktu</p>
+        <div class="col-md-4" data-aos="fade-left">
+            <div class="feature-card text-center p-4 rounded-4 shadow-sm">
+                <div class="feature-icon mx-auto mb-4">
+                    <i class="bi bi-clock-history fs-1"></i>
+                </div>
+                <h4 class="fw-bold">Tepat Waktu</h4>
+                <p class="text-muted">Pengerjaan cepat dan sesuai estimasi waktu</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Testimoni Section -->
-<section class="container mb-5">
-    <h2 class="text-center mb-5" data-aos="fade-up">Testimoni Pelanggan</h2>
-    
-    <div class="row">
-        <div class="col-md-4 mb-4" data-aos="fade-right">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex mb-3">
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h2 class="display-5 fw-bold">Testimoni Pelanggan</h2>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-right">
+                <div class="testimonial-card p-4 rounded-4 shadow-sm bg-white">
+                    <div class="stars mb-3">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                     </div>
-                    <p class="card-text">"Service cepat, mekaniknya ramah dan profesional. Harga juga terjangkau. Recommended!"</p>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-person-circle fs-1 me-3"></i>
+                    <p class="testimonial-text fst-italic">"Service cepat, mekaniknya ramah dan profesional. Harga juga terjangkau. Recommended!"</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <i class="bi bi-person-circle fs-1 me-3 text-primary"></i>
                         <div>
-                            <h6 class="mb-0">Andi Customer</h6>
+                            <h6 class="mb-0 fw-bold">Andi Customer</h6>
                             <small class="text-muted">Pelanggan Setia</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-up">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex mb-3">
+            <div class="col-md-4" data-aos="fade-up">
+                <div class="testimonial-card p-4 rounded-4 shadow-sm bg-white">
+                    <div class="stars mb-3">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                     </div>
-                    <p class="card-text">"Sparepart original, harganya bersaing. Sudah langganan service di sini sejak 2020."</p>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-person-circle fs-1 me-3"></i>
+                    <p class="testimonial-text fst-italic">"Sparepart original, harganya bersaing. Sudah langganan service di sini sejak 2020."</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <i class="bi bi-person-circle fs-1 me-3 text-primary"></i>
                         <div>
-                            <h6 class="mb-0">Budi Customer</h6>
+                            <h6 class="mb-0 fw-bold">Budi Customer</h6>
                             <small class="text-muted">Pemilik Avanza</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-4 mb-4" data-aos="fade-left">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex mb-3">
+            <div class="col-md-4" data-aos="fade-left">
+                <div class="testimonial-card p-4 rounded-4 shadow-sm bg-white">
+                    <div class="stars mb-3">
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-fill text-warning"></i>
                         <i class="bi bi-star-half text-warning"></i>
                     </div>
-                    <p class="card-text">"Pelayanan ramah, tempatnya bersih. Saya puas dengan hasil service AC mobil saya."</p>
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-person-circle fs-1 me-3"></i>
+                    <p class="testimonial-text fst-italic">"Pelayanan ramah, tempatnya bersih. Saya puas dengan hasil service AC mobil saya."</p>
+                    <div class="d-flex align-items-center mt-4">
+                        <i class="bi bi-person-circle fs-1 me-3 text-primary"></i>
                         <div>
-                            <h6 class="mb-0">Citra Pelanggan</h6>
+                            <h6 class="mb-0 fw-bold">Citra Pelanggan</h6>
                             <small class="text-muted">Pemilik Honda HRV</small>
                         </div>
                     </div>

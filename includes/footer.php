@@ -1,37 +1,45 @@
 <?php
 // File: includes/footer.php
 ?>
-    </div> <!-- Penutup container -->
-</div> <!-- Penutup container-fluid -->
+</main>
 
 <!-- Footer -->
-<footer class="bg-dark text-white mt-5 py-4">
+<footer class="bg-dark text-white pt-5 pb-4">
     <div class="container">
-        <div class="row">
-            <div class="col-md-4 mb-3">
-                <h5><i class="bi bi-gear-wide-connected"></i> Bengkel Jaya Abadi</h5>
+        <div class="row g-4">
+            <div class="col-lg-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-gear-wide-connected me-2"></i>Bengkel Jaya Abadi</h5>
                 <p>Bengkel mobil profesional dengan mekanik berpengalaman. Melayani service dan penjualan sparepart berkualitas.</p>
+                <div class="social-links mt-4">
+                    <a href="#" class="me-3 text-white-50"><i class="bi bi-facebook fs-4"></i></a>
+                    <a href="#" class="me-3 text-white-50"><i class="bi bi-instagram fs-4"></i></a>
+                    <a href="#" class="me-3 text-white-50"><i class="bi bi-whatsapp fs-4"></i></a>
+                    <a href="#" class="me-3 text-white-50"><i class="bi bi-youtube fs-4"></i></a>
+                </div>
             </div>
-            <div class="col-md-4 mb-3">
-                <h5>Kontak Kami</h5>
-                <p>
-                    <i class="bi bi-geo-alt-fill"></i> Jl. Ahmad Yani No. 123, Jakarta<br>
-                    <i class="bi bi-telephone-fill"></i> 021-555-1234<br>
-                    <i class="bi bi-envelope-fill"></i> info@jayabadi.com<br>
-                    <i class="bi bi-clock-fill"></i> Senin - Sabtu: 08:00 - 20:00
-                </p>
+            <div class="col-lg-4">
+                <h5 class="fw-bold mb-3">Kontak Kami</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Jl. Ahmad Yani No. 123, Jakarta</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>021-555-1234</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i>info@jayabadi.com</li>
+                    <li class="mb-2"><i class="bi bi-clock-fill me-2"></i>Senin - Sabtu: 08:00 - 20:00</li>
+                </ul>
             </div>
-            <div class="col-md-4 mb-3">
-                <h5>Ikuti Kami</h5>
-                <a href="#" class="text-white me-2"><i class="bi bi-facebook fs-4"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-instagram fs-4"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-whatsapp fs-4"></i></a>
-                <a href="#" class="text-white me-2"><i class="bi bi-youtube fs-4"></i></a>
+            <div class="col-lg-4">
+                <h5 class="fw-bold mb-3">Newsletter</h5>
+                <p>Dapatkan informasi promo dan layanan terbaru.</p>
+                <form class="mt-3">
+                    <div class="input-group">
+                        <input type="email" class="form-control bg-dark border-secondary text-white" placeholder="Email Anda">
+                        <button class="btn btn-primary" type="submit">Langganan</button>
+                    </div>
+                </form>
             </div>
         </div>
-        <hr class="bg-light">
+        <hr class="border-secondary my-4">
         <div class="text-center">
-            <p class="mb-0">&copy; 2024 Bengkel Mobil Jaya Abadi. Hak Cipta Dilindungi.</p>
+            <p class="mb-0 text-white-50">&copy; 2024 Bengkel Mobil Jaya Abadi. Hak Cipta Dilindungi.</p>
         </div>
     </div>
 </footer>
@@ -49,7 +57,8 @@
     // Inisialisasi AOS
     AOS.init({
         duration: 1000,
-        once: true
+        once: true,
+        offset: 100
     });
 </script>
 </body>

@@ -1,5 +1,15 @@
 // File: assets/js/script.js
 
+// Navbar scroll effect
+window.addEventListener('scroll', function() {
+    const navbar = document.getElementById('mainNav');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    } else {
+        navbar.classList.remove('scrolled');
+    }
+});
+
 // Konfirmasi hapus
 function confirmHapus(event) {
     if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
@@ -91,7 +101,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 var backToTopBtn = document.createElement('button');
 backToTopBtn.innerHTML = '<i class="bi bi-arrow-up"></i>';
 backToTopBtn.className = 'btn btn-primary back-to-top';
-backToTopBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;display:none;z-index:99;border-radius:50%;width:50px;height:50px;';
+backToTopBtn.style.cssText = 'position:fixed;bottom:20px;right:20px;display:none;z-index:99;border-radius:50%;width:50px;height:50px;box-shadow:var(--shadow-md);';
 document.body.appendChild(backToTopBtn);
 
 window.addEventListener('scroll', function() {
@@ -115,4 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
     tooltipTriggerList.map(function(tooltipTriggerEl) {
         return new bootstrap.Tooltip(tooltipTriggerEl)
     });
+});
+
+// Tambahkan class scrolled pada navbar jika halaman di-refresh tidak di top
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.scrollY > 50) {
+        document.getElementById('mainNav').classList.add('scrolled');
+    }
 });
