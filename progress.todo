@@ -1,0 +1,15 @@
+Bagian Admin = 
+v index
+v jasa
+v qris
+v sparepart
+v users
+v booking
+v profil
+v transaksi
+v get_detail_transaksi
+
+Bagian Customer = 
+v pembayaran
+x
+x
