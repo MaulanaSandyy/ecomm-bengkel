@@ -28,7 +28,7 @@ $profil = fetch_assoc(query("SELECT * FROM profil_bengkel WHERE id = 1"));
                 <a href="#jasa" class="btn btn-outline-light btn-lg"><i class="fas fa-arrow-down me-2"></i>Lihat Layanan</a>
             </div>
             <div class="col-lg-6" data-aos="fade-left">
-                <img src="assets/img/hero-car.png" alt="Hero Image" class="img-fluid animate__animated animate__bounceIn">
+                <img src="assets/img/banner.png" alt="Hero Image" class="img-fluid animate__animated animate__bounceIn">
             </div>
         </div>
     </div>
