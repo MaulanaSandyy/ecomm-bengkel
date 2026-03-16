@@ -11,5 +11,11 @@ v get_detail_transaksi
 
 Bagian Customer = 
 v pembayaran
+v riwayat
+v index
 x
 x
+
+
+Bagian owner =
+v index

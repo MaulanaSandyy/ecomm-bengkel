@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
     <div class="container">
-        <a class="navbar-brand" href="/ecom/index.php">
+        <a class="navbar-brand" href="/ecomm-bengkel/index.php">
             <i class="fas fa-car me-2"></i>Bengkel Jaya Abadi
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -14,7 +14,7 @@ if (session_status() == PHP_SESSION_NONE) {
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/ecom/index.php"><i class="fas fa-home me-1"></i>Beranda</a>
+                    <a class="nav-link" href="/ecomm-bengkel/index.php"><i class="fas fa-home me-1"></i>Beranda</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/ecom/index.php#jasa"><i class="fas fa-wrench me-1"></i>Jasa</a>
@@ -45,15 +45,15 @@ if (session_status() == PHP_SESSION_NONE) {
                             <i class="fas fa-user me-1"></i><?php echo $_SESSION['nama_lengkap']; ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/ecom/auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ecom/auth/login.php"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
+                        <a class="nav-link" href="/ecomm-bengkel/auth/login.php"><i class="fas fa-sign-in-alt me-1"></i>Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/ecom/auth/register.php"><i class="fas fa-user-plus me-1"></i>Register</a>
+                        <a class="nav-link" href="/ecomm-bengkel/auth/register.php"><i class="fas fa-user-plus me-1"></i>Register</a>
                     </li>
                 <?php endif; ?>
             </ul>
