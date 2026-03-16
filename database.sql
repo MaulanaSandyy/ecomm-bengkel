@@ -1,192 +1,166 @@
 -- Membuat Database
-CREATE DATABASE IF NOT EXISTS db_bengkel;
-USE db_bengkel;
+CREATE DATABASE IF NOT EXISTS bengkel_mobil;
+USE bengkel_mobil;
 
--- =====================================================
 -- Tabel roles
--- =====================================================
 CREATE TABLE roles (
-    id_role INT PRIMARY KEY AUTO_INCREMENT,
-    nama_role VARCHAR(50) NOT NULL,
-    keterangan TEXT
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama_role VARCHAR(50) NOT NULL
 );
 
-INSERT INTO roles (nama_role, keterangan) VALUES
-('admin', 'Memiliki akses penuh ke sistem'),
-('owner', 'Melihat laporan dan statistik'),
-('pegawai', 'Mengelola service dan booking'),
-('customer', 'Melakukan booking dan melihat riwayat');
+INSERT INTO roles (nama_role) VALUES 
+('admin'), ('owner'), ('pegawai'), ('customer');
 
--- =====================================================
 -- Tabel users
--- =====================================================
 CREATE TABLE users (
-    id_user INT PRIMARY KEY AUTO_INCREMENT,
-    id_role INT NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama_lengkap VARCHAR(100) NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    nama_lengkap VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
-    no_telepon VARCHAR(15),
+    no_hp VARCHAR(15),
     alamat TEXT,
-    foto VARCHAR(255) DEFAULT 'default.jpg',
-    tanggal_daftar TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_role) REFERENCES roles(id_role)
+    role_id INT DEFAULT 4,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (role_id) REFERENCES roles(id)
 );
 
--- Password: admin123 (sudah di-hash)
-INSERT INTO users (id_role, username, password, nama_lengkap, email, no_telepon, alamat) VALUES
-(1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin Bengkel', 'admin@bengkel.com', '081234567890', 'Jl. Raya No. 1'),
-(2, 'owner', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Pemilik Bengkel', 'owner@bengkel.com', '081234567891', 'Jl. Raya No. 2'),
-(3, 'pegawai', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Mekanik Handal', 'pegawai@bengkel.com', '081234567892', 'Jl. Raya No. 3'),
-(4, 'customer1', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Andi Customer', 'andi@gmail.com', '081234567893', 'Jl. Mawar No. 1'),
-(4, 'customer2', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Budi Customer', 'budi@gmail.com', '081234567894', 'Jl. Melati No. 2');
+-- Insert default users (password: 123)
+INSERT INTO users (nama_lengkap, username, password, email, no_hp, alamat, role_id) VALUES
+('Admin Bengkel', 'admin', '123', 'admin@bengkel.com', '081234567890', 'Jl. Bengkel No. 1', 1),
+('Pemilik Bengkel', 'owner', '123', 'owner@bengkel.com', '081234567891', 'Jl. Bengkel No. 2', 2),
+('Mekanik Senior', 'pegawai', '123', 'pegawai@bengkel.com', '081234567892', 'Jl. Bengkel No. 3', 3),
+('Customer Satu', 'customer', '123', 'customer@gmail.com', '081234567893', 'Jl. Pelanggan No. 1', 4);
 
--- =====================================================
 -- Tabel profil_bengkel
--- =====================================================
 CREATE TABLE profil_bengkel (
-    id_profil INT PRIMARY KEY AUTO_INCREMENT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nama_bengkel VARCHAR(100) NOT NULL,
     alamat TEXT NOT NULL,
-    no_telepon VARCHAR(15) NOT NULL,
-    email VARCHAR(100),
-    jam_buka VARCHAR(50),
+    no_telp VARCHAR(15) NOT NULL,
+    email VARCHAR(100) NOT NULL,
     deskripsi TEXT,
-    logo VARCHAR(255) DEFAULT 'logo.png',
-    facebook VARCHAR(100),
-    instagram VARCHAR(100),
-    maps_embed TEXT
+    jam_operasional VARCHAR(100),
+    logo VARCHAR(255),
+    gambar_banner VARCHAR(255),
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO profil_bengkel (nama_bengkel, alamat, no_telepon, email, jam_buka, deskripsi) VALUES
-('Bengkel Mobil Jaya Abadi', 'Jl. Ahmad Yani No. 123, Jakarta', '021-555-1234', 'info@jayabadi.com', 'Senin - Sabtu: 08:00 - 20:00', 'Bengkel mobil profesional dengan mekanik berpengalaman. Melayani service ringan, berat, ganti oli, dan perbaikan mesin. Juga menjual sparepart original dan berkualitas.');
+INSERT INTO profil_bengkel (nama_bengkel, alamat, no_telp, email, deskripsi, jam_operasional) VALUES
+('Bengkel Mobil Jaya Abadi', 'Jl. Raya Otomotif No. 123, Jakarta', '021-555-1234', 'info@jayabadi.com', 'Bengkel mobil profesional dengan teknisi berpengalaman. Melayani service rutin, perbaikan mesin, dan jual sparepart original.', 'Senin - Sabtu: 08:00 - 20:00, Minggu: 09:00 - 15:00');
 
--- =====================================================
 -- Tabel jasa
--- =====================================================
 CREATE TABLE jasa (
-    id_jasa INT PRIMARY KEY AUTO_INCREMENT,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nama_jasa VARCHAR(100) NOT NULL,
     deskripsi TEXT,
-    harga DECIMAL(10,2) NOT NULL,
+    harga DECIMAL(15,2) NOT NULL,
+    gambar VARCHAR(255),
     estimasi_waktu VARCHAR(50),
-    gambar VARCHAR(255) DEFAULT 'jasa.jpg',
-    status ENUM('aktif', 'nonaktif') DEFAULT 'aktif'
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 INSERT INTO jasa (nama_jasa, deskripsi, harga, estimasi_waktu) VALUES
-('Ganti Oli Mesin', 'Mengganti oli mesin dengan oli berkualitas', 250000, '30 menit'),
-('Service Rem', 'Pengecekan dan perbaikan sistem rem', 350000, '1 jam'),
-('Tune Up Mesin', 'Penyetelan dan perawatan mesin', 500000, '2 jam'),
-('Service AC', 'Pengecekan dan perbaikan AC mobil', 450000, '1.5 jam'),
-('Spooring & Balancing', 'Penyeimbangan dan pelurusan ban', 300000, '45 menit'),
-('Ganti Aki', 'Penggantian aki mobil baru', 850000, '20 menit');
+('Service Rutin', 'Ganti oli, filter oli, dan pengecekan mesin lengkap', 350000, '2 Jam'),
+('Tune Up Mesin', 'Pembersihan dan penyetelan mesin untuk performa optimal', 450000, '3 Jam'),
+('Service AC', 'Pengecekan dan perbaikan sistem AC mobil', 400000, '2 Jam'),
+('Ganti Oli', 'Ganti oli mesin dan filter oli', 250000, '1 Jam'),
+('Balancing & Spooring', 'Penyeimbangan roda dan penyelarasan ban', 300000, '1.5 Jam'),
+('Overhaul Mesin', 'Turun mesin dan perbaikan total', 3500000, '3 Hari');
 
--- =====================================================
 -- Tabel sparepart
--- =====================================================
 CREATE TABLE sparepart (
-    id_sparepart INT PRIMARY KEY AUTO_INCREMENT,
-    kode_sparepart VARCHAR(20) UNIQUE NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     nama_sparepart VARCHAR(100) NOT NULL,
     deskripsi TEXT,
-    harga_jual DECIMAL(10,2) NOT NULL,
-    stok INT NOT NULL DEFAULT 0,
-    gambar VARCHAR(255) DEFAULT 'sparepart.jpg',
-    merk VARCHAR(50),
-    tipe_mobil TEXT,
-    status ENUM('tersedia', 'habis') DEFAULT 'tersedia'
+    harga DECIMAL(15,2) NOT NULL,
+    stok INT DEFAULT 0,
+    gambar VARCHAR(255),
+    merek VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO sparepart (kode_sparepart, nama_sparepart, deskripsi, harga_jual, stok, merk, tipe_mobil) VALUES
-('SP001', 'Oli Mesin 5W-30', 'Oli mesin sintetik 1 liter', 95000, 50, 'Shell', 'Semua mobil'),
-('SP002', 'Filter Oli', 'Filter oli original', 45000, 30, 'Toyota', 'Avanza, Xenia'),
-('SP003', 'Kampas Rem Depan', 'Kampas rem depan original', 250000, 20, 'Honda', 'Civic, HRV'),
-('SP004', 'Aki Mobil 50Ah', 'Aki kering mobil', 750000, 10, 'GS Battery', 'Avanza, Xenia, Ertiga'),
-('SP005', 'Busi Iridium', 'Busi Iridium 4 buah', 350000, 25, 'NGK', 'Semua mobil'),
-('SP006', 'V-belt', 'V-belt mesin', 125000, 15, 'Mitsuboshi', 'Avanza, Xenia');
+INSERT INTO sparepart (nama_sparepart, deskripsi, harga, stok, merek) VALUES
+('Oli Mesin 5W-30', 'Oli mesin sintetik untuk performa optimal', 150000, 50, 'Toyota'),
+('Filter Oli', 'Filter oli original berkualitas', 75000, 30, 'Honda'),
+('Kampas Rem Depan', 'Kampas rem berkualitas tinggi', 250000, 25, 'Aisin'),
+('Busi Iridium', 'Busi iridium untuk pembakaran sempurna', 180000, 40, 'NGK'),
+('Aki Mobil 12V', 'Aki kering dengan daya tahan lama', 850000, 15, 'GS Astra'),
+('Filter Udara', 'Filter udara mesin', 125000, 20, 'Denso'),
+('V-Belt', 'Belt penggerak alternator dan AC', 95000, 35, 'Bando'),
+('Lampu Depan LED', 'Lampu LED putih terang', 350000, 18, 'Philips');
 
--- =====================================================
 -- Tabel booking
--- =====================================================
 CREATE TABLE booking (
-    id_booking INT PRIMARY KEY AUTO_INCREMENT,
-    id_user INT NOT NULL,
-    id_jasa INT NOT NULL,
-    tgl_booking DATE NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    jasa_id INT,
+    tanggal_booking DATE NOT NULL,
     jam_booking TIME NOT NULL,
-    no_plat VARCHAR(15) NOT NULL,
-    merk_mobil VARCHAR(50),
-    tipe_mobil VARCHAR(50),
-    tahun_mobil YEAR,
     keluhan TEXT,
-    status ENUM('pending', 'diproses', 'selesai', 'dibatalkan') DEFAULT 'pending',
-    tgl_pembuatan TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user) REFERENCES users(id_user),
-    FOREIGN KEY (id_jasa) REFERENCES jasa(id_jasa)
+    status ENUM('pending', 'dikonfirmasi', 'selesai', 'batal') DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (jasa_id) REFERENCES jasa(id)
 );
 
-INSERT INTO booking (id_user, id_jasa, tgl_booking, jam_booking, no_plat, merk_mobil, tipe_mobil, tahun_mobil, keluhan, status) VALUES
-(4, 1, '2024-01-15', '09:00:00', 'B 1234 ABC', 'Toyota', 'Avanza', 2020, 'Oli sudah 5000 km', 'selesai'),
-(4, 2, '2024-01-20', '10:30:00', 'B 1234 ABC', 'Toyota', 'Avanza', 2020, 'Rem bunyi', 'selesai'),
-(5, 3, '2024-02-01', '13:00:00', 'D 5678 EFG', 'Honda', 'Civic', 2019, 'Mesin brebet', 'diproses');
-
--- =====================================================
 -- Tabel service
--- =====================================================
 CREATE TABLE service (
-    id_service INT PRIMARY KEY AUTO_INCREMENT,
-    id_booking INT UNIQUE NOT NULL,
-    id_mekanik INT,
-    tgl_masuk DATE,
-    tgl_keluar DATE,
-    catatan_mekanik TEXT,
-    biaya_tambahan DECIMAL(10,2) DEFAULT 0,
-    status ENUM('antrian', 'dikerjakan', 'selesai', 'diambil') DEFAULT 'antrian',
-    FOREIGN KEY (id_booking) REFERENCES booking(id_booking),
-    FOREIGN KEY (id_mekanik) REFERENCES users(id_user)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    booking_id INT NOT NULL,
+    pegawai_id INT,
+    catatan_service TEXT,
+    biaya_tambahan DECIMAL(15,2) DEFAULT 0,
+    status ENUM('antri', 'dikerjakan', 'selesai') DEFAULT 'antri',
+    tanggal_selesai DATE,
+    FOREIGN KEY (booking_id) REFERENCES booking(id),
+    FOREIGN KEY (pegawai_id) REFERENCES users(id)
 );
 
-INSERT INTO service (id_booking, id_mekanik, tgl_masuk, tgl_keluar, catatan_mekanik, biaya_tambahan, status) VALUES
-(1, 3, '2024-01-15', '2024-01-15', 'Ganti oli mesin, kondisi oli sudah hitam', 0, 'selesai'),
-(2, 3, '2024-01-20', '2024-01-20', 'Ganti kampas rem depan, sudah aus', 250000, 'selesai');
-
--- =====================================================
 -- Tabel transaksi
--- =====================================================
 CREATE TABLE transaksi (
-    id_transaksi INT PRIMARY KEY AUTO_INCREMENT,
-    kode_transaksi VARCHAR(20) UNIQUE NOT NULL,
-    id_user INT NOT NULL,
-    id_booking INT,
-    tgl_transaksi DATE NOT NULL,
-    total_harga DECIMAL(10,2) NOT NULL,
-    metode_pembayaran ENUM('tunai', 'transfer', 'kartu kredit', 'qris') DEFAULT 'tunai',
-    status_pembayaran ENUM('belum bayar', 'lunas') DEFAULT 'belum bayar',
-    FOREIGN KEY (id_user) REFERENCES users(id_user),
-    FOREIGN KEY (id_booking) REFERENCES booking(id_booking)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    kode_transaksi VARCHAR(50) UNIQUE NOT NULL,
+    user_id INT NOT NULL,
+    total_harga DECIMAL(15,2) NOT NULL,
+    status ENUM('pending', 'lunas', 'batal') DEFAULT 'pending',
+    metode_pembayaran VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-INSERT INTO transaksi (kode_transaksi, id_user, id_booking, tgl_transaksi, total_harga, metode_pembayaran, status_pembayaran) VALUES
-('TRX20240115001', 4, 1, '2024-01-15', 250000, 'tunai', 'lunas'),
-('TRX20240120001', 4, 2, '2024-01-20', 600000, 'transfer', 'lunas');
-
--- =====================================================
 -- Tabel detail_transaksi
--- =====================================================
 CREATE TABLE detail_transaksi (
-    id_detail INT PRIMARY KEY AUTO_INCREMENT,
-    id_transaksi INT NOT NULL,
-    tipe_item ENUM('jasa', 'sparepart') NOT NULL,
-    id_item INT NOT NULL,
-    jumlah INT NOT NULL DEFAULT 1,
-    harga_satuan DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
-    FOREIGN KEY (id_transaksi) REFERENCES transaksi(id_transaksi)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    transaksi_id INT NOT NULL,
+    item_type ENUM('jasa', 'sparepart') NOT NULL,
+    item_id INT NOT NULL,
+    harga DECIMAL(15,2) NOT NULL,
+    jumlah INT DEFAULT 1,
+    FOREIGN KEY (transaksi_id) REFERENCES transaksi(id) ON DELETE CASCADE
 );
 
-INSERT INTO detail_transaksi (id_transaksi, tipe_item, id_item, jumlah, harga_satuan, subtotal) VALUES
-(1, 'jasa', 1, 1, 250000, 250000),
-(2, 'jasa', 2, 1, 350000, 350000),
-(2, 'sparepart', 3, 1, 250000, 250000);
+-- Tabel qris
+CREATE TABLE qris (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    gambar VARCHAR(255) NOT NULL,
+    nama_bank VARCHAR(50),
+    atas_nama VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO qris (gambar, nama_bank, atas_nama) VALUES
+('qris-default.jpg', 'BCA', 'Bengkel Jaya Abadi');
+
+-- Tabel payment
+CREATE TABLE payment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    transaksi_id INT NOT NULL,
+    metode VARCHAR(50) DEFAULT 'QRIS',
+    status ENUM('pending', 'sukses', 'gagal') DEFAULT 'pending',
+    bukti_pembayaran VARCHAR(255),
+    tanggal_payment TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (transaksi_id) REFERENCES transaksi(id)
+);

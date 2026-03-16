@@ -20,9 +20,9 @@
             <div class="col-lg-4">
                 <h5 class="fw-bold mb-3">Kontak Kami</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Jl. Ahmad Yani No. 123, Jakarta</li>
-                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>021-555-1234</li>
-                    <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i>info@jayabadi.com</li>
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2"></i>Jl. Srikandi Pamulang No. 123, Tangerang Selatan</li>
+                    <li class="mb-2"><i class="bi bi-telephone-fill me-2"></i>081234567812</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2"></i>info@bengkeljaya.com</li>
                     <li class="mb-2"><i class="bi bi-clock-fill me-2"></i>Senin - Sabtu: 08:00 - 20:00</li>
                 </ul>
             </div>
@@ -39,7 +39,7 @@
         </div>
         <hr class="border-secondary my-4">
         <div class="text-center">
-            <p class="mb-0 text-white-50">&copy; 2024 Bengkel Mobil Jaya Abadi. Hak Cipta Dilindungi.</p>
+            <p class="mb-0 text-white-50">&copy; 2026 Bengkel Mobil Jaya Abadi. Hak Cipta Dilindungi.</p>
         </div>
     </div>
 </footer>
