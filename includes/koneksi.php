@@ -1,115 +1,92 @@
 <?php
-// File: includes/koneksi.php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db = "bengkel_mobil";
 
-$host = 'localhost';
-$username = 'root';
-$password = '';
-$database = 'db_bengkel';
+$conn = mysqli_connect($host, $user, $pass, $db);
 
-// Membuat koneksi
-$koneksi = mysqli_connect($host, $username, $password, $database);
-
-// Cek koneksi
-if (!$koneksi) {
-    die("Koneksi database gagal: " . mysqli_connect_error());
+if (!$conn) {
+    die("Koneksi gagal: " . mysqli_connect_error());
 }
 
-// Mengatur charset agar tidak error dengan karakter khusus
-mysqli_set_charset($koneksi, 'utf8');
-
-// Fungsi untuk menjalankan query dan menangani error
+// Fungsi untuk menjalankan query
 function query($sql) {
-    global $koneksi;
-    $result = mysqli_query($koneksi, $sql);
-    
-    if (!$result) {
-        die("Error query: " . mysqli_error($koneksi));
-    }
-    
-    return $result;
+    global $conn;
+    return mysqli_query($conn, $sql);
 }
 
-// Fungsi untuk mengambil data sebagai array asosiatif
+// Fungsi untuk mengambil data array
 function fetch_array($result) {
+    return mysqli_fetch_array($result);
+}
+
+// Fungsi untuk mengambil data assoc
+function fetch_assoc($result) {
     return mysqli_fetch_assoc($result);
 }
 
-// Fungsi untuk mengambil semua data
-function fetch_all($result) {
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = $row;
-    }
-    return $data;
-}
-
-// Fungsi untuk menghitung jumlah baris
+// Fungsi untuk menghitung baris
 function num_rows($result) {
     return mysqli_num_rows($result);
 }
 
-// Fungsi untuk mengambil ID terakhir yang di-insert
-function insert_id() {
-    global $koneksi;
-    return mysqli_insert_id($koneksi);
+// Fungsi untuk escaping string
+function escape_string($string) {
+    global $conn;
+    return mysqli_real_escape_string($conn, $string);
 }
 
-// Fungsi untuk membersihkan input
-function bersihkan_input($data) {
-    global $koneksi;
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return mysqli_real_escape_string($koneksi, $data);
+// Fungsi untuk upload gambar
+function upload_gambar($file, $folder) {
+    $target_dir = "../uploads/" . $folder . "/";
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+    
+    $gambar = time() . "_" . basename($file["name"]);
+    $target_file = $target_dir . $gambar;
+    $uploadOk = 1;
+    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+    
+    // Cek apakah file gambar
+    $check = getimagesize($file["tmp_name"]);
+    if ($check !== false) {
+        $uploadOk = 1;
+    } else {
+        return false;
+    }
+    
+    // Cek ukuran file (max 5MB)
+    if ($file["size"] > 5000000) {
+        return false;
+    }
+    
+    // Izinkan format tertentu
+    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+        return false;
+    }
+    
+    if (move_uploaded_file($file["tmp_name"], $target_file)) {
+        return $gambar;
+    } else {
+        return false;
+    }
 }
 
-// Fungsi untuk mengecek login session
+// Cek login
 function cek_login() {
-    session_start();
-    if (!isset($_SESSION['id_user'])) {
-        header('Location: ../login.php');
-        exit;
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../auth/login.php");
+        exit();
     }
 }
 
-// Fungsi untuk mengecek role user
-function cek_role($role_diperbolehkan) {
-    session_start();
-    if (!isset($_SESSION['role'])) {
-        header('Location: ../login.php');
-        exit;
+// Cek role
+function cek_role($role_id) {
+    if ($_SESSION['role_id'] != $role_id) {
+        header("Location: ../index.php");
+        exit();
     }
-    
-    if (!in_array($_SESSION['role'], $role_diperbolehkan)) {
-        header('Location: ../index.php');
-        exit;
-    }
-}
-
-// Fungsi untuk format tanggal Indonesia
-function tgl_indo($tanggal) {
-    $bulan = array(
-        1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    );
-    
-    $pecahkan = explode('-', $tanggal);
-    return $pecahkan[2] . ' ' . $bulan[(int)$pecahkan[1]] . ' ' . $pecahkan[0];
-}
-
-// Fungsi untuk format rupiah
-function rupiah($angka) {
-    return 'Rp ' . number_format($angka, 0, ',', '.');
-}
-
-// Fungsi untuk membuat kode transaksi otomatis
-function buat_kode_transaksi() {
-    $tanggal = date('Ymd');
-    $query = "SELECT COUNT(*) as total FROM transaksi WHERE tgl_transaksi = CURDATE()";
-    $result = query($query);
-    $data = fetch_array($result);
-    $urutan = $data['total'] + 1;
-    
-    return 'TRX' . $tanggal . sprintf('%03d', $urutan);
 }
 ?>
