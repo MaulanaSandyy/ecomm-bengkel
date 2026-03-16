@@ -119,4 +119,28 @@ $profil = fetch_assoc(query("SELECT * FROM profil_bengkel WHERE id = 1"));
                         <h5 class="card-title"><?php echo $row['nama_sparepart']; ?></h5>
                         <p class="card-text text-muted"><?php echo substr($row['deskripsi'], 0, 100); ?>...</p>
                         <p class="text-primary fw-bold">Rp <?php echo number_format($row['harga'], 0, ',', '.'); ?></p>
-                       
+                        <p class="text-muted"><i class="fas fa-box me-1"></i>Stok: <?php echo $row['stok']; ?> | Merek: <?php echo $row['merek']; ?></p>
+                        <?php if (isset($_SESSION['user_id']) && $_SESSION['role_id'] == 4): ?>
+                            <a href="customer/beli.php?id=<?php echo $row['id']; ?>" class="btn btn-success w-100">Beli Sekarang</a>
+                        <?php else: ?>
+                            <a href="auth/login.php" class="btn btn-success w-100">Login untuk Membeli</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+            <?php endwhile; ?>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center text-white" data-aos="zoom-in">
+        <h2 class="fw-bold mb-4">Siap untuk Service Mobil Anda?</h2>
+        <p class="lead mb-4">Booking sekarang dan dapatkan pelayanan terbaik dari teknisi profesional kami</p>
+        <a href="#jasa" class="btn btn-warning btn-lg me-3"><i class="fas fa-calendar-alt me-2"></i>Booking Jasa</a>
+        <a href="#sparepart" class="btn btn-outline-light btn-lg"><i class="fas fa-shopping-cart me-2"></i>Beli Sparepart</a>
+    </div>
+</section>
+
+<?php include 'includes/footer.php'; ?>
