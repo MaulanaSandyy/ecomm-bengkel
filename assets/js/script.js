@@ -1,10 +1,11 @@
-// JavaScript untuk website bengkel
+// JavaScript untuk website bengkel - Logika tetap sama, hanya dirapikan
 
 // Inisialisasi AOS
 AOS.init({
-    duration: 1000,
+    duration: 800,
+    easing: 'ease-out-cubic',
     once: true,
-    offset: 100
+    offset: 50
 });
 
 // Smooth Scroll
@@ -24,10 +25,12 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Navbar Scroll Effect
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.classList.add('navbar-scrolled');
-    } else {
-        navbar.classList.remove('navbar-scrolled');
+    if (navbar) {
+        if (window.scrollY > 50) {
+            navbar.classList.add('navbar-scrolled');
+        } else {
+            navbar.classList.remove('navbar-scrolled');
+        }
     }
 });
 
@@ -48,20 +51,21 @@ function hideLoading() {
     }
 }
 
-// Konfirmasi Delete dengan SweetAlert
+// Konfirmasi Delete dengan SweetAlert (Disesuaikan style-nya sedikit)
 function confirmDelete(url, message = 'Data akan dihapus permanen!') {
     Swal.fire({
         title: 'Apakah Anda yakin?',
         text: message,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+        confirmButtonColor: '#ef4444', // Tailwind red-500
+        cancelButtonColor: '#64748b',  // Tailwind slate-500
         confirmButtonText: 'Ya, hapus!',
         cancelButtonText: 'Batal',
-        background: 'white',
+        background: '#ffffff',
+        borderRadius: '24px',
         backdrop: `
-            rgba(0,0,123,0.4)
+            rgba(15, 23, 42, 0.4)
             url("https://sweetalert2.github.io/images/nyan-cat.gif")
             left top
             no-repeat
@@ -97,8 +101,9 @@ function previewImage(input, previewId) {
 // Auto hide alerts
 document.querySelectorAll('.alert').forEach(alert => {
     setTimeout(() => {
-        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.transition = 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
         alert.style.opacity = '0';
+        alert.style.transform = 'translateY(-10px)';
         setTimeout(() => {
             alert.style.display = 'none';
         }, 500);
@@ -110,6 +115,7 @@ function searchTable(inputId, tableId) {
     const input = document.getElementById(inputId);
     const filter = input.value.toUpperCase();
     const table = document.getElementById(tableId);
+    if(!table) return;
     const tr = table.getElementsByTagName('tr');
     
     for (let i = 1; i < tr.length; i++) {
@@ -137,7 +143,9 @@ function searchTable(inputId, tableId) {
 
 // Print function
 function printTable(tableId) {
-    const printContent = document.getElementById(tableId).outerHTML;
+    const printElement = document.getElementById(tableId);
+    if(!printElement) return;
+    const printContent = printElement.outerHTML;
     const originalContent = document.body.innerHTML;
     document.body.innerHTML = printContent;
     window.print();
@@ -148,13 +156,16 @@ function printTable(tableId) {
 // Export to Excel
 function exportToExcel(tableId, filename = 'data.xlsx') {
     const table = document.getElementById(tableId);
-    const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
-    XLSX.writeFile(wb, filename);
+    if(table && typeof XLSX !== 'undefined') {
+        const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+        XLSX.writeFile(wb, filename);
+    }
 }
 
 // Counter Animation
 function animateCounter(elementId, target, duration = 2000) {
     const element = document.getElementById(elementId);
+    if(!element) return;
     const start = 0;
     const increment = target / (duration / 10);
     let current = start;
@@ -170,18 +181,19 @@ function animateCounter(elementId, target, duration = 2000) {
     }, 10);
 }
 
-// Tooltip initialization
+// Tooltip & Popover initialization (Bootstrap 5)
 document.addEventListener('DOMContentLoaded', function() {
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-});
+    if(typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
 
-// Popover initialization
-const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-popoverTriggerList.map(function(popoverTriggerEl) {
-    return new bootstrap.Popover(popoverTriggerEl);
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.map(function(popoverTriggerEl) {
+            return new bootstrap.Popover(popoverTriggerEl);
+        });
+    }
 });
 
 // Dynamic form validation
@@ -209,7 +221,7 @@ document.querySelectorAll('.toggle-password').forEach(button => {
 // Back to top button
 const backToTopButton = document.createElement('button');
 backToTopButton.innerHTML = '<i class="fas fa-arrow-up"></i>';
-backToTopButton.className = 'btn btn-primary back-to-top';
+backToTopButton.className = 'btn btn-primary back-to-top shadow-lg';
 backToTopButton.style.cssText = `
     position: fixed;
     bottom: 30px;
@@ -220,15 +232,30 @@ backToTopButton.style.cssText = `
     width: 50px;
     height: 50px;
     padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(20px);
 `;
 
 document.body.appendChild(backToTopButton);
 
 window.addEventListener('scroll', function() {
     if (window.scrollY > 300) {
-        backToTopButton.style.display = 'block';
+        backToTopButton.style.display = 'flex';
+        // Small delay for transition to work properly after display block
+        setTimeout(() => {
+            backToTopButton.style.opacity = '1';
+            backToTopButton.style.transform = 'translateY(0)';
+        }, 10);
     } else {
-        backToTopButton.style.display = 'none';
+        backToTopButton.style.opacity = '0';
+        backToTopButton.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            if(window.scrollY <= 300) backToTopButton.style.display = 'none';
+        }, 300);
     }
 });
 

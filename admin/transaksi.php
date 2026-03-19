@@ -12,9 +12,9 @@ if (isset($_GET['update_status'])) {
     $query = "UPDATE transaksi SET status = '$status' WHERE id = $id";
     
     if (query($query)) {
-        $_SESSION['success'] = "Status transaksi berhasil diupdate!";
+        $_SESSION['success'] = "Status pembayaran berhasil diupdate!";
     } else {
-        $_SESSION['error'] = "Status transaksi gagal diupdate!";
+        $_SESSION['error'] = "Status pembayaran gagal diupdate!";
     }
     header("Location: transaksi.php");
     exit();
@@ -28,9 +28,9 @@ if (isset($_GET['delete'])) {
     query("DELETE FROM detail_transaksi WHERE transaksi_id = $id");
     
     if (query("DELETE FROM transaksi WHERE id = $id")) {
-        $_SESSION['success'] = "Transaksi berhasil dihapus!";
+        $_SESSION['success'] = "Data transaksi berhasil dihapus!";
     } else {
-        $_SESSION['error'] = "Transaksi gagal dihapus!";
+        $_SESSION['error'] = "Data transaksi gagal dihapus!";
     }
     header("Location: transaksi.php");
     exit();
@@ -81,284 +81,278 @@ $title = "Kelola Transaksi";
 include '../includes/header.php';
 ?>
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 col-lg-2 px-0">
-            <div class="sidebar">
-                <h4 class="text-white mb-4"><i class="fas fa-dashboard me-2"></i>Menu Admin</h4>
-                <a href="index.php"><i class="fas fa-home me-2"></i>Dashboard</a>
-                <a href="users.php"><i class="fas fa-users me-2"></i>Kelola Users</a>
-                <a href="jasa.php"><i class="fas fa-wrench me-2"></i>Kelola Jasa</a>
-                <a href="sparepart.php"><i class="fas fa-oil-can me-2"></i>Kelola Sparepart</a>
-                <a href="booking.php"><i class="fas fa-calendar-alt me-2"></i>Kelola Booking</a>
-                <a href="transaksi.php" class="active"><i class="fas fa-credit-card me-2"></i>Kelola Transaksi</a>
-                <a href="profil.php"><i class="fas fa-building me-2"></i>Profil Bengkel</a>
-                <a href="qris.php"><i class="fas fa-qrcode me-2"></i>Upload QRIS</a>
+<div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
+    <div class="row g-0 g-lg-4">
+        
+        <div class="col-md-3 col-lg-2 d-none d-md-block" data-aos="fade-right">
+            <div class="sidebar rounded-4 shadow-sm" style="top: 100px;">
+                <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
+                    <i class="fas fa-shield-alt me-2"></i>Menu Admin
+                </h5>
+                <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
+                <a href="users.php"><i class="fas fa-users"></i>Kelola Users</a>
+                <a href="jasa.php"><i class="fas fa-wrench"></i>Kelola Jasa</a>
+                <a href="sparepart.php"><i class="fas fa-box-open"></i>Kelola Sparepart</a>
+                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
+                <a href="transaksi.php" class="active"><i class="fas fa-cash-register"></i>Kelola Transaksi</a>
+                <a href="profil.php"><i class="fas fa-building"></i>Profil Bengkel</a>
+                <a href="qris.php"><i class="fas fa-qrcode"></i>Upload QRIS</a>
             </div>
         </div>
         
-        <!-- Main Content -->
-        <div class="col-md-9 col-lg-10 p-4">
-            <h2 class="mb-4">Kelola Transaksi</h2>
+        <div class="col-md-9 col-lg-10 p-4 p-lg-0" data-aos="fade-left">
+            <h3 class="fw-bold mb-4 text-dark">Data Transaksi & Pembayaran</h3>
             
-            <!-- Statistik Cards -->
-            <div class="row mb-4">
-                <div class="col-xl-3 col-md-6 mb-3" data-aos="fade-up">
-                    <div class="card bg-primary text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Total Transaksi</h6>
-                                <h3><?php echo $total_transaksi; ?></h3>
+            <div class="row g-3 mb-4">
+                <div class="col-lg-7">
+                    <div class="row g-3 h-100 row-cols-2 row-cols-md-4">
+                        <div class="col" data-aos="fade-up">
+                            <div class="card bg-white border-0 shadow-sm rounded-4 border-start border-4 border-primary h-100">
+                                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
+                                    <h6 class="text-muted mb-1 small fw-bold text-uppercase">Semua</h6>
+                                    <h3 class="mb-0 fw-bold text-dark"><?php echo $total_transaksi; ?></h3>
+                                </div>
                             </div>
-                            <i class="fas fa-credit-card fa-3x"></i>
+                        </div>
+                        <div class="col" data-aos="fade-up" data-aos-delay="50">
+                            <div class="card bg-white border-0 shadow-sm rounded-4 border-start border-4 border-warning h-100">
+                                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
+                                    <h6 class="text-muted mb-1 small fw-bold text-uppercase">Pending</h6>
+                                    <h3 class="mb-0 fw-bold text-warning"><?php echo $total_pending; ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" data-aos="fade-up" data-aos-delay="100">
+                            <div class="card bg-white border-0 shadow-sm rounded-4 border-start border-4 border-success h-100">
+                                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
+                                    <h6 class="text-muted mb-1 small fw-bold text-uppercase">Lunas</h6>
+                                    <h3 class="mb-0 fw-bold text-success"><?php echo $total_lunas; ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" data-aos="fade-up" data-aos-delay="150">
+                            <div class="card bg-white border-0 shadow-sm rounded-4 border-start border-4 border-danger h-100">
+                                <div class="card-body p-3 text-center d-flex flex-column justify-content-center">
+                                    <h6 class="text-muted mb-1 small fw-bold text-uppercase">Batal</h6>
+                                    <h3 class="mb-0 fw-bold text-danger"><?php echo $total_batal; ?></h3>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="col-xl-3 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="100">
-                    <div class="card bg-warning text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Pending</h6>
-                                <h3><?php echo $total_pending; ?></h3>
+
+                <div class="col-lg-5">
+                    <div class="row g-3 h-100 row-cols-1 row-cols-sm-2">
+                        <div class="col" data-aos="fade-left" data-aos-delay="200">
+                            <div class="card border-0 shadow-sm rounded-4 h-100" style="background: var(--success-gradient);">
+                                <div class="card-body p-3 text-white">
+                                    <p class="mb-1 small fw-medium opacity-75">Bulan Ini</p>
+                                    <h4 class="fw-bold mb-0 text-truncate" title="Rp <?php echo number_format($pendapatan_bulan_ini ?: 0, 0, ',', '.'); ?>">Rp <?php echo number_format($pendapatan_bulan_ini ?: 0, 0, ',', '.'); ?></h4>
+                                </div>
                             </div>
-                            <i class="fas fa-clock fa-3x"></i>
                         </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-3 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="200">
-                    <div class="card bg-success text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Lunas</h6>
-                                <h3><?php echo $total_lunas; ?></h3>
+                        <div class="col" data-aos="fade-left" data-aos-delay="250">
+                            <div class="card border-0 shadow-sm rounded-4 h-100" style="background: var(--primary-gradient);">
+                                <div class="card-body p-3 text-white">
+                                    <p class="mb-1 small fw-medium opacity-75">Total Revenue</p>
+                                    <h4 class="fw-bold mb-0 text-truncate" title="Rp <?php echo number_format($total_pendapatan ?: 0, 0, ',', '.'); ?>">Rp <?php echo number_format($total_pendapatan ?: 0, 0, ',', '.'); ?></h4>
+                                </div>
                             </div>
-                            <i class="fas fa-check-circle fa-3x"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-xl-3 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="300">
-                    <div class="card bg-danger text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Batal</h6>
-                                <h3><?php echo $total_batal; ?></h3>
-                            </div>
-                            <i class="fas fa-times-circle fa-3x"></i>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Statistik Pendapatan -->
-            <div class="row mb-4">
-                <div class="col-md-6" data-aos="fade-right">
-                    <div class="card bg-info text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Total Pendapatan</h6>
-                                <h3>Rp <?php echo number_format($total_pendapatan, 0, ',', '.'); ?></h3>
-                            </div>
-                            <i class="fas fa-money-bill-wave fa-3x"></i>
-                        </div>
-                    </div>
-                </div>
+            <div class="card border-0 shadow-sm rounded-4" data-aos="fade-up">
                 
-                <div class="col-md-6" data-aos="fade-left">
-                    <div class="card bg-secondary text-white p-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6>Pendapatan Bulan Ini</h6>
-                                <h3>Rp <?php echo number_format($pendapatan_bulan_ini, 0, ',', '.'); ?></h3>
-                            </div>
-                            <i class="fas fa-chart-line fa-3x"></i>
+                <div class="card-header bg-white pt-4 pb-3 px-4 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fas fa-file-invoice-dollar text-primary me-2"></i>Daftar Invoice</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-success btn-sm rounded-pill px-3 shadow-sm" onclick="exportToExcel('transaksiTable', 'Laporan_Transaksi.xlsx')">
+                                <i class="fas fa-file-excel me-2"></i>Excel
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm" onclick="window.print()">
+                                <i class="fas fa-print me-2"></i>Cetak
+                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <!-- Filter Form -->
-            <div class="card mb-4" data-aos="fade-down">
-                <div class="card-body">
-                    <form method="GET" action="" class="row g-3">
-                        <div class="col-md-2">
-                            <select name="filter_status" class="form-control">
-                                <option value="">Semua Status</option>
+                    
+                    <form method="GET" action="" class="row align-items-end g-3 d-print-none">
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label text-muted small fw-bold">Status</label>
+                            <select name="filter_status" class="form-select bg-light border-0">
+                                <option value="">Semua</option>
                                 <option value="pending" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
                                 <option value="lunas" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] == 'lunas') ? 'selected' : ''; ?>>Lunas</option>
                                 <option value="batal" <?php echo (isset($_GET['filter_status']) && $_GET['filter_status'] == 'batal') ? 'selected' : ''; ?>>Batal</option>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <input type="date" name="start_date" class="form-control" 
-                                   value="<?php echo $_GET['start_date'] ?? ''; ?>" placeholder="Start Date">
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label text-muted small fw-bold">Tgl Mulai</label>
+                            <input type="date" name="start_date" class="form-control bg-light border-0" value="<?php echo $_GET['start_date'] ?? ''; ?>">
                         </div>
-                        <div class="col-md-2">
-                            <input type="date" name="end_date" class="form-control" 
-                                   value="<?php echo $_GET['end_date'] ?? ''; ?>" placeholder="End Date">
+                        <div class="col-md-2 col-sm-6">
+                            <label class="form-label text-muted small fw-bold">Tgl Akhir</label>
+                            <input type="date" name="end_date" class="form-control bg-light border-0" value="<?php echo $_GET['end_date'] ?? ''; ?>">
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4 col-sm-6">
+                            <label class="form-label text-muted small fw-bold">Cari Data</label>
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" 
-                                       placeholder="Cari kode transaksi atau customer..." 
-                                       value="<?php echo $_GET['search'] ?? ''; ?>">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                </button>
+                                <span class="input-group-text bg-light border-0 px-3"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="search" class="form-control bg-light border-0 ps-0" placeholder="Kode Invoice / Nama..." value="<?php echo $_GET['search'] ?? ''; ?>">
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <a href="transaksi.php" class="btn btn-secondary w-100">
-                                <i class="fas fa-sync-alt"></i> Reset
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1 rounded-pill shadow-sm">Cari</button>
+                            <a href="transaksi.php" class="btn btn-light border rounded-pill px-3" data-bs-toggle="tooltip" title="Reset">
+                                <i class="fas fa-sync-alt"></i>
                             </a>
                         </div>
                     </form>
                 </div>
-            </div>
-            
-            <!-- Tabel Transaksi -->
-            <div class="card" data-aos="fade-up">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>Daftar Transaksi</h5>
-                    <div>
-                        <button class="btn btn-light btn-sm me-2" onclick="exportToExcel('transaksiTable', 'transaksi.xlsx')">
-                            <i class="fas fa-file-excel"></i> Export Excel
-                        </button>
-                        <button class="btn btn-light btn-sm" onclick="window.print()">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
+                
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover" id="transaksiTable">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0" id="transaksiTable">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>No</th>
-                                    <th>Kode Transaksi</th>
-                                    <th>Tanggal</th>
-                                    <th>Customer</th>
-                                    <th>No. HP</th>
-                                    <th>Total Item</th>
-                                    <th>Total Harga</th>
-                                    <th>Metode</th>
-                                    <th>Status</th>
-                                    <th>Aksi</th>
+                                    <th class="ps-4">Invoice</th>
+                                    <th>Customer Info</th>
+                                    <th>Rincian</th>
+                                    <th>Metode & Status</th>
+                                    <th class="text-end pe-4 d-print-none">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="border-top-0">
                                 <?php 
-                                $no = 1; 
+                                $total_table_pendapatan = 0;
                                 while($row = fetch_assoc($transaksi)): 
+                                    if($row['status'] == 'lunas') $total_table_pendapatan += $row['total_harga'];
                                 ?>
                                 <tr>
-                                    <td><?php echo $no++; ?></td>
-                                    <td>
-                                        <strong><?php echo $row['kode_transaksi']; ?></strong>
-                                    </td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($row['created_at'])); ?></td>
-                                    <td><?php echo $row['nama_lengkap']; ?></td>
-                                    <td><?php echo $row['no_hp']; ?></td>
-                                    <td class="text-center"><?php echo $row['total_item']; ?></td>
-                                    <td>Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></td>
-                                    <td>
-                                        <span class="badge bg-info">
-                                            <?php echo $row['metode_pembayaran'] ?: 'Belum dipilih'; ?>
-                                        </span>
+                                    <td class="ps-4">
+                                        <div class="d-flex flex-column">
+                                            <span class="badge bg-light text-dark border d-inline-block w-auto mb-1 align-self-start fw-bold fs-6">
+                                                <i class="fas fa-file-invoice me-1"></i><?php echo $row['kode_transaksi']; ?>
+                                            </span>
+                                            <span class="small text-muted"><i class="far fa-calendar-alt me-1"></i><?php echo date('d M Y, H:i', strtotime($row['created_at'])); ?></span>
+                                        </div>
                                     </td>
                                     <td>
-                                        <?php
-                                        $badge = [
-                                            'pending' => 'warning',
-                                            'lunas' => 'success',
-                                            'batal' => 'danger'
-                                        ];
-                                        ?>
-                                        <span class="badge bg-<?php echo $badge[$row['status']]; ?>">
-                                            <?php echo strtoupper($row['status']); ?>
-                                        </span>
+                                        <h6 class="mb-0 fw-bold text-dark"><?php echo $row['nama_lengkap']; ?></h6>
+                                        <small class="text-muted"><i class="fas fa-phone-alt me-1"></i><?php echo $row['no_hp']; ?></small>
                                     </td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-info" 
-                                                onclick="lihatDetail(<?php echo $row['id']; ?>)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" 
-                                                    data-bs-toggle="dropdown">
-                                                <i class="fas fa-cog"></i>
+                                        <span class="d-block text-muted small mb-1"><?php echo $row['total_item']; ?> Item Servis/Part</span>
+                                        <h6 class="mb-0 fw-bold text-success">Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></h6>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex flex-column gap-1 align-items-start">
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-1 text-uppercase small" style="font-size: 0.65rem;">
+                                                <i class="fas fa-wallet me-1"></i> <?php echo $row['metode_pembayaran'] ?: 'BELUM DIPILIH'; ?>
+                                            </span>
+                                            <?php
+                                            $badge = ['pending' => 'warning', 'lunas' => 'success', 'batal' => 'danger'];
+                                            ?>
+                                            <span class="badge bg-<?php echo $badge[$row['status']]; ?> bg-opacity-10 text-<?php echo $badge[$row['status']]; ?> border border-<?php echo $badge[$row['status']]; ?> border-opacity-25 rounded-pill px-2 py-1 text-uppercase small" style="font-size: 0.65rem;">
+                                                <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> <?php echo $row['status']; ?>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end pe-4 d-print-none">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="btn btn-sm btn-light text-primary rounded-circle shadow-sm border" 
+                                                    onclick="lihatDetail(<?php echo $row['id']; ?>)" data-bs-toggle="tooltip" title="Lihat Detail Nota">
+                                                <i class="fas fa-eye"></i>
                                             </button>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                    <a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=pending">
-                                                        <i class="fas fa-clock text-warning me-2"></i>Set Pending
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=lunas">
-                                                        <i class="fas fa-check-circle text-success me-2"></i>Set Lunas
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=batal">
-                                                        <i class="fas fa-times-circle text-danger me-2"></i>Set Batal
-                                                    </a>
-                                                </li>
-                                                <li><hr class="dropdown-divider"></li>
-                                                <li>
-                                                    <a class="dropdown-item text-danger" href="#" 
-                                                       onclick="return confirmDelete('?delete=<?php echo $row['id']; ?>')">
-                                                        <i class="fas fa-trash me-2"></i>Hapus
-                                                    </a>
-                                                </li>
-                                            </ul>
+                                            
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light border rounded-circle shadow-sm text-dark px-2" type="button" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
+                                                    <li><h6 class="dropdown-header">Update Pembayaran</h6></li>
+                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=pending"><i class="fas fa-clock text-warning me-2 w-20px"></i>Set Pending</a></li>
+                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=lunas"><i class="fas fa-check-circle text-success me-2 w-20px"></i>Pelunasan</a></li>
+                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=batal"><i class="fas fa-times-circle text-danger me-2 w-20px"></i>Set Batal</a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="#" onclick="return confirmDelete('?delete=<?php echo $row['id']; ?>', 'Hapus permanen invoice ini beserta detailnya?')"><i class="fas fa-trash me-2 w-20px"></i>Hapus Data</a></li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
+                                
+                                <?php if(num_rows($transaksi) == 0): ?>
+                                    <tr><td colspan="5" class="text-center py-5 text-muted">Data transaksi kosong atau tidak sesuai kriteria filter.</td></tr>
+                                <?php endif; ?>
                             </tbody>
-                            <tfoot>
-                                <tr class="fw-bold">
-                                    <td colspan="6" class="text-end">Total:</td>
-                                    <td>Rp <?php echo number_format($total_pendapatan, 0, ',', '.'); ?></td>
-                                    <td colspan="3"></td>
+                            <tfoot class="bg-light d-none d-print-table-row">
+                                <tr>
+                                    <td colspan="2" class="text-end fw-bold pt-3 pb-3">TOTAL LUNAS DARI TABEL INI:</td>
+                                    <td colspan="3" class="fw-bold text-success fs-5 pt-3 pb-3">Rp <?php echo number_format($total_table_pendapatan, 0, ',', '.'); ?></td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
 
-<!-- Modal Detail Transaksi -->
 <div class="modal fade" id="detailModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Detail Transaksi</h5>
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary text-white border-0 py-3">
+                <h5 class="modal-title fw-bold"><i class="fas fa-receipt me-2"></i>Rincian Invoice Transaksi</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body" id="detailContent">
-                <!-- Content will be loaded here -->
+            <div class="modal-body p-0 bg-light" id="detailContent">
+                <div class="p-5 text-center text-muted">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p>Memuat data nota...</p>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-white">
+                <button type="button" class="btn btn-light border rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
 </div>
+
+<style media="print">
+    /* Styling khusus saat dokumen dicetak agar rapih di kertas */
+    @page { size: portrait; margin: 1cm; }
+    body { background: white !important; font-size: 11pt; }
+    .sidebar, .navbar, footer, .d-print-none, .aos-init, .aos-animate { display: none !important; }
+    .container-fluid { padding: 0 !important; margin: 0 !important; }
+    .col-md-9, .col-lg-10 { width: 100% !important; max-width: 100% !important; flex: 0 0 100% !important; padding: 0 !important; }
+    .card { border: none !important; box-shadow: none !important; margin-bottom: 20px !important; break-inside: avoid; }
+    .card-header { background: white !important; border-bottom: 2px solid #000 !important; padding: 0 0 10px 0 !important; }
+    .table { border-collapse: collapse !important; width: 100% !important; }
+    .table th, .table td { border: 1px solid #ddd !important; padding: 8px !important; }
+    .bg-light { background-color: #f9f9f9 !important; -webkit-print-color-adjust: exact; }
+</style>
 
 <script>
 function lihatDetail(id) {
+    // Show Modal with loading state first
+    var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+    document.getElementById('detailContent').innerHTML = '<div class="p-5 text-center text-muted"><div class="spinner-border text-primary mb-3" role="status"></div><p>Memuat data nota...</p></div>';
+    modal.show();
+
     // Load detail via AJAX
     fetch('get_detail_transaksi.php?id=' + id)
         .then(response => response.text())
         .then(data => {
             document.getElementById('detailContent').innerHTML = data;
-            var modal = new bootstrap.Modal(document.getElementById('detailModal'));
-            modal.show();
+        })
+        .catch(err => {
+            document.getElementById('detailContent').innerHTML = '<div class="p-5 text-center text-danger"><i class="fas fa-exclamation-triangle fa-3x mb-3"></i><p>Gagal memuat data. Silakan coba lagi.</p></div>';
         });
 }
 
@@ -369,12 +363,15 @@ function exportToExcel(tableId, filename) {
     let csv = [];
     
     rows.forEach(row => {
-        const cols = row.querySelectorAll('td, th');
-        const rowData = [];
-        cols.forEach(col => {
-            rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
-        });
-        csv.push(rowData.join(','));
+        // Skip header footer that might be problematic or hidden columns (Aksi)
+        const cols = row.querySelectorAll('td:not(.d-print-none), th:not(.d-print-none)');
+        if(cols.length > 0) {
+            const rowData = [];
+            cols.forEach(col => {
+                rowData.push('"' + col.innerText.replace(/"/g, '""').replace(/\n/g, ' ') + '"');
+            });
+            csv.push(rowData.join(','));
+        }
     });
     
     const csvContent = csv.join('\n');
@@ -382,7 +379,7 @@ function exportToExcel(tableId, filename) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename.replace('.xlsx', '.csv');
+    a.download = filename.replace('.xlsx', '.csv'); // Convert extension simply for CSV
     a.click();
 }
 </script>
