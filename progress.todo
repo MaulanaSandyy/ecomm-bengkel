@@ -1,29 +1,54 @@
 Bagian Admin = 
-v index
-v jasa
-v qris
-v sparepart
-v users
-v booking
-v profil
-v transaksi
-v get_detail_transaksi
+v index.php
+v jasa.php
+v qris.php
+v sparepart.php
+v users.php
+v booking.php
+v profil.php
+v transaksi.php
+v get_detail_transaksi.php
 
 Bagian Customer = 
-v pembayaran
-v riwayat
-v index
-x
-x
-x
+v pembayaran.php
+v riwayat.php
+v index.php
+v beli.php
+x checkout.php
+x pembayaran.php
 
 
 Bagian owner =
-v index
-v laporan
-v transaksi
+v index.php
+v laporan.php
+v transaksi.php
+x booking.php
 
 Bagian Pegawai = 
-x
-x
-x
+x booking.php
+x index.php
+x service.php
+
+
+Perubahan style website = 
+v style.css (assets/css)
+v script.js (assets/js)
+v index.php (main)
+v header.php (includes)
+v navbar.php (includes)
+v footer.php (includes)
+v index.php (owner)
+v laporam.php (owner)
+v transaksi.php (owner)
+v login.php (auth)
+v registers.php (auth)
+v index.php (admin)
+v users.php (admin)
+v transaksi.php (admin)
+v profil.php (admin)
+v qris.php (admin)
+v get_detail_transaksi.php (admin)
+x jasa.php (admin)
+x sparepart.php (admin)
+x booking.php (admin)
+
