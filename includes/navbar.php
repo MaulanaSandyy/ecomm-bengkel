@@ -20,24 +20,24 @@ if (session_status() == PHP_SESSION_NONE) {
                     <a class="nav-link" href="/ecom/index.php#jasa"><i class="fas fa-wrench me-1"></i>Jasa</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/ecom/index.php#sparepart"><i class="fas fa-oil-can me-1"></i>Sparepart</a>
+                    <a class="nav-link" href="/ecomm-bengkel/index.php#sparepart"><i class="fas fa-oil-can me-1"></i>Sparepart</a>
                 </li>
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <?php if ($_SESSION['role_id'] == 1): // Admin ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="/ecom/admin/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
+                            <a class="nav-link" href="/ecomm-bengkel/admin/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
                         </li>
                     <?php elseif ($_SESSION['role_id'] == 2): // Owner ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="/ecom/owner/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
+                            <a class="nav-link" href="/ecomm-bengkel/owner/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
                         </li>
                     <?php elseif ($_SESSION['role_id'] == 3): // Pegawai ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="/ecom/pegawai/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
+                            <a class="nav-link" href="/ecomm-bengkel/pegawai/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
                         </li>
                     <?php elseif ($_SESSION['role_id'] == 4): // Customer ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="/ecom/customer/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
+                            <a class="nav-link" href="/ecomm-bengkel/customer/"><i class="fas fa-dashboard me-1"></i>Dashboard</a>
                         </li>
                     <?php endif; ?>
                     <li class="nav-item dropdown">
@@ -45,7 +45,7 @@ if (session_status() == PHP_SESSION_NONE) {
                             <i class="fas fa-user me-1"></i><?php echo $_SESSION['nama_lengkap']; ?>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="../auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/ecomm-bengkel/auth/logout.php"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </li>
                 <?php else: ?>
