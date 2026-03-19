@@ -33,7 +33,7 @@ $total_booking = num_rows(query("SELECT * FROM booking"));
                 </a>
 
                 <a href="laporan.php">
-                    <i class="fas fa-chart-bar me-2"></i>Laporan
+                    <i class="fas fa-chart-bar me-2"></i>Laporan Keuangan
                 </a>
 
             </div>
