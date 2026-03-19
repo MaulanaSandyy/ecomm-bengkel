@@ -17,7 +17,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     <a class="nav-link" href="/ecomm-bengkel/index.php"><i class="fas fa-home me-1"></i>Beranda</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/ecom/index.php#jasa"><i class="fas fa-wrench me-1"></i>Jasa</a>
+                    <a class="nav-link" href="/ecomm-bengkel/index.php#jasa"><i class="fas fa-wrench me-1"></i>Jasa</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/ecomm-bengkel/index.php#sparepart"><i class="fas fa-oil-can me-1"></i>Sparepart</a>
