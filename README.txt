@@ -1,15 +1,21 @@
 <div align="center">
-  
-  <img src="https://cdn-icons-png.flaticon.com/512/1995/1995470.png" alt="AutoGarage Logo" width="120">
 
-  # 🚗 AutoGarage - Modern Workshop Management System
+<a href="https://git.io/typing-svg">
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=700&size=28&pause=1000&color=0D6EFD&center=true&vCenter=true&width=600&lines=AutoGarage+System;Modern+Workshop+Management;E-Commerce+Sparepart+Integration" alt="Typing SVG"/>
+</a>
 
-  Sebuah sistem informasi manajemen bengkel dan *e-commerce* suku cadang berbasis Web. Dibangun dengan pendekatan UI/UX yang modern, responsif, dan interaktif untuk memberikan pengalaman terbaik bagi Admin maupun Pelanggan.
+<p>
+<strong>Sistem Manajemen Bengkel Digital & E-Commerce Suku Cadang Terpadu</strong>
+</p>
 
-  [![PHP](https://img.shields.io/badge/PHP-Native-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net/)
-  [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-  [![MySQL](https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-  [![Status](https://img.shields.io/badge/Status-Completed-success?style=for-the-badge)](#)
+<img src="./image_43f67b.png" alt="AutoGarage Dashboard Preview" width="100%"/>
+
+<br><br>
+
+<img src="https://img.shields.io/badge/Status-Completed-success?style=for-the-badge&logo=github"/>
+<img src="https://img.shields.io/badge/PHP-Native-777BB4?style=for-the-badge&logo=php&logoColor=white"/>
+<img src="https://img.shields.io/badge/MySQL-Database-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
+<img src="https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white"/>
 
 </div>
 
@@ -17,120 +23,153 @@
 
 ## 📖 Tentang Projek
 
-**AutoGarage** dirancang untuk mendigitalisasi proses bisnis bengkel otomotif. Sistem ini menggabungkan fitur **Booking Service** antrean secara *real-time* dengan **Marketplace Sparepart** dalam satu platform terpadu. Dilengkapi dengan *dashboard* analitik cerdas, nota digital (*printable*), dan integrasi pembayaran QRIS.
+**AutoGarage** adalah platform berbasis web komprehensif yang dirancang untuk mendigitalisasi operasional bengkel otomotif.
+Sistem ini menjembatani kebutuhan administratif bengkel (<kbd>B2B</kbd>) dengan kemudahan bertransaksi bagi pelanggan (<kbd>B2C</kbd>) dalam satu ekosistem yang terintegrasi secara seamless.
 
-## ✨ Fitur Unggulan
-
-Sistem ini membagi hak akses menjadi 2 *Role* utama dengan ekosistem antarmuka yang disesuaikan:
-
-### 👨‍🔧 Panel Admin (Manajemen Inti)
-- **Dashboard Analytics:** Pantauan statistik pendapatan, status booking, dan transaksi secara dinamis.
-- **Manajemen Inventaris (Split UX):** Kelola katalog suku cadang dengan layout *split-screen* untuk *editing* cepat tanpa berpindah halaman.
-- **Manajemen Layanan Jasa:** Pengaturan harga dan jenis *service* bengkel.
-- **Smart Booking System:** Kontrol alur antrean (Pending ➔ Konfirmasi ➔ Selesai) terintegrasi dengan tabel teknisi.
-- **Digital Invoicing:** *Generate* struk/nota transaksi ala kasir profesional yang siap dicetak (*Printable*).
-- **Pengaturan Profil & QRIS:** Fleksibilitas mengubah informasi bengkel, logo, *banner*, dan *barcode* QRIS dinamis untuk pembayaran.
-
-### 👤 Panel Customer (E-Commerce Style)
-- **Interactive Dashboard:** Sapaan *user* dengan *quick-action cards* berdesain *hover-lift*.
-- **Katalog Sparepart:** Tampilan *grid card* produk ala *marketplace* modern dengan indikator stok otomatis.
-- **Seamless Booking:** Jadwalkan perbaikan kendaraan dari rumah tanpa antre fisik.
-- **Sistem Keranjang & Checkout:** Penggabungan pembelian *sparepart* dan layanan jasa dalam satu tagihan pembayaran.
-- **Riwayat Transaksi:** Lacak progres status pemesanan dan riwayat *service* kendaraan.
+Tinggalkan pencatatan manual berbasis kertas.
+AutoGarage menghadirkan sistem antrean cerdas, manajemen inventaris, dan pembuatan nota digital dalam satu aplikasi responsif.
 
 ---
 
-## 🛠️ Tech Stack & Library
+## ✨ Sorotan Fitur Utama
 
-- **Backend:** PHP Native (Custom Query Wrapper)
-- **Database:** MySQL (Relational Mapping)
-- **Frontend:** HTML5, CSS3, JavaScript
-- **CSS Framework:** Bootstrap 5
-- **Icons:** FontAwesome 5/6
-- **Animations:** AOS (Animate On Scroll)
+<table>
+<tr>
+<td width="50%" valign="top">
 
----
+### 👨‍🔧 Portal Administrator
 
-## 🚀 Panduan Instalasi (Local Development)
+* **Executive Dashboard** — Analitik pendapatan dan antrean realtime
+* **Split-UX Inventory** — Kelola katalog sparepart dengan UI layar terbelah
+* **Smart Booking Flow** — Pending → Konfirmasi → Selesai
+* **Digital Invoicing** — Generate struk otomatis print-ready
+* **Dynamic Settings** — Edit profil bengkel & QRIS instan
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan *project* ini di mesin lokal Anda (menggunakan XAMPP / Laragon / MAMP):
+</td>
+<td width="50%" valign="top">
 
-1. **Clone Repository**
-   Buka terminal/CMD Anda dan jalankan perintah berikut:
-   `git clone https://github.com/username/autogarage.git`
+### 👤 Portal Customer
 
-2. **Pindahkan Folder**
-   Pindahkan folder hasil *clone* (`autogarage`) ke dalam direktori *server* lokal Anda:
-   - Pengguna XAMPP: Masukkan ke `C:/xampp/htdocs/autogarage`
-   - Pengguna Laragon: Masukkan ke `C:/laragon/www/autogarage`
+* **Interactive Hub** — Dashboard personal hover-card
+* **Sparepart Marketplace** — Stok realtime
+* **Online Booking** — Booking service dari rumah
+* **Unified Checkout** — Service + sparepart satu keranjang
+* **Transaction History** — Tracking status pesanan
 
-3. **Konfigurasi Database**
-   - Buka *browser* dan akses `http://localhost/phpmyadmin`
-   - Buat *database* baru dengan nama `db_bengkel` (atau sesuai nama *database* Anda).
-   - *Import* file `db_bengkel.sql` yang terdapat di dalam folder `database/` atau *root folder* ke dalam *database* yang baru dibuat.
-
-4. **Konfigurasi Koneksi PHP**
-   Buka file `includes/koneksi.php` menggunakan *Code Editor* (VS Code) dan sesuaikan kredensial *database* Anda jika memakai *password*:
-   `$host = "localhost";`
-   `$user = "root";`
-   `$pass = "";`
-   `$db   = "db_bengkel";`
-
-5. **Jalankan Aplikasi**
-   Nyalakan modul Apache dan MySQL di XAMPP/Laragon Anda. Buka *browser* dan akses URL berikut:
-   `http://localhost/autogarage`
+</td>
+</tr>
+</table>
 
 ---
 
-## 🔐 Akun Demo (Testing)
+## 🛠️ Teknologi & Library
 
-Gunakan kredensial berikut untuk menguji coba sistem (Pastikan data ini ada di tabel `users` Anda):
+<div align="center">
 
-| Role | Username / Email | Password |
-| :--- | :--- | :--- |
-| **Admin** | `admin@bengkel.com` | `admin123` |
-| **Customer** | `customer@gmail.com` | `customer123` |
+<img src="https://skillicons.dev/icons?i=php,mysql,html,css,js,bootstrap,github&perline=7"/>
 
----
+</div>
 
-## 📂 Struktur Direktori
+<br>
 
-    📦 autogarage
-     ┣ 📂 admin               # Panel khusus Administrator
-     ┃ ┣ 📜 index.php
-     ┃ ┣ 📜 transaksi.php
-     ┃ ┗ 📜 ...
-     ┣ 📂 customer            # Antarmuka Pelanggan (B2C)
-     ┃ ┣ 📜 index.php
-     ┃ ┣ 📜 beli.php
-     ┃ ┗ 📜 ...
-     ┣ 📂 includes            # File konfigurasi & template parsial
-     ┃ ┣ 📜 header.php
-     ┃ ┣ 📜 footer.php
-     ┃ ┗ 📜 koneksi.php
-     ┣ 📂 uploads             # Direktori penyimpanan file dinamis (Image/QRIS)
-     ┗ 📜 index.php           # Landing page utama / Login
+* Styling & Animation — CSS3, AOS
+* Icons — FontAwesome 5 / 6
+* Architecture — Client-Server Monolithic (Procedural PHP)
 
 ---
 
-## 💡 Pro Tips untuk Portofolio
+## 🚀 Panduan Instalasi Lokal
 
-- Ganti URL gambar logo di paling atas dokumen ini dengan URL *screenshot dashboard* asli buatan Anda.
-- Ganti `https://github.com/username/autogarage.git` dengan *link repository* Anda yang sebenarnya.
-- Jangan lupa tambahkan *link* LinkedIn atau website pribadi Anda di bagian pengembang di bawah!
+<details>
+<summary><b>🔥 Klik untuk melihat langkah instalasi</b></summary>
+
+<br>
+
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/username-anda/autogarage.git
+```
+
+### 2. Pindahkan ke folder server
+
+XAMPP
+
+```
+C:/xampp/htdocs/autogarage
+```
+
+Laragon
+
+```
+C:/laragon/www/autogarage
+```
+
+### 3. Setup Database
+
+* buka http://localhost/phpmyadmin
+* buat database `db_bengkel`
+* import `db_bengkel.sql`
+
+### 4. Konfigurasi koneksi
+
+```
+includes/koneksi.php
+```
+
+```php
+$host = "localhost";
+$user = "root";
+$pass = "";
+$db   = "db_bengkel";
+```
+
+### 5. Jalankan
+
+```
+http://localhost/autogarage
+```
+
+</details>
 
 ---
 
-## 👨‍💻 Pengembang
+## 🔐 Kredensial Demo
 
-Dikembangkan dan dirancang oleh **Maulana Sandy**.
-- **Role:** Web Developer / Informatics Engineering Student
-- **GitHub:** [https://github.com/maulanasandy](https://github.com) *(Ganti dengan link asli)*
-- **LinkedIn:** [Profil LinkedIn Anda](https://linkedin.com)
+| Role                | Email                                           | Password    |
+| ------------------- | ----------------------------------------------- | ----------- |
+| <kbd>Admin</kbd>    | [admin@bengkel.com](mailto:admin@bengkel.com)   | admin123    |
+| <kbd>Customer</kbd> | [customer@gmail.com](mailto:customer@gmail.com) | customer123 |
+
+---
+
+## 👨‍💻 Tentang Pengembang
+
+<div align="center">
+
+<img src="https://avatars.githubusercontent.com/u/9919?s=100&v=4" width="80"/>
+
+### Maulana Sandy
+
+*Informatics Engineering Student & Web Developer*
+
+<a href="https://github.com/username-anda">
+<img src="https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white"/>
+</a>
+
+<a href="https://linkedin.com/in/username-anda">
+<img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/>
+</a>
+
+</div>
 
 ---
 
 <div align="center">
-  <p>Dibuat dengan 💻 dan ☕ untuk menyelesaikan permasalahan manajemen operasional bengkel.</p>
-  <p>&copy; 2026 AutoGarage System. All Rights Reserved.</p>
+
+Dibuat dengan 💻 dan ☕
+© 2026 Maulana Sandy
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0D6EFD&height=120&section=footer"/>
+
 </div>
