@@ -98,3 +98,20 @@ if (isset($_POST['update_qty'])) {
     header("Location: checkout.php");
     exit();
 }
+
+// Handle Checkout
+if (isset($_POST['checkout'])) {
+
+    if (!isset($_SESSION['cart']) || count($_SESSION['cart']) == 0) {
+
+        $_SESSION['error'] = "Keranjang belanja kosong!";
+        header("Location: beli.php");
+        exit();
+    }
+
+    // Hitung total
+    $total = 0;
+
+    foreach ($_SESSION['cart'] as $item) {
+        $total += $item['harga'] * $item['qty'];
+    }
