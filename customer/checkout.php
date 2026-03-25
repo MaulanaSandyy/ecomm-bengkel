@@ -169,3 +169,19 @@ if (isset($_POST['checkout'])) {
         exit();
     }
 }
+
+$cart_items = [];
+$total = 0;
+
+if (isset($_SESSION['cart'])
+    && count($_SESSION['cart']) > 0) {
+
+    foreach ($_SESSION['cart'] as $id => $item) {
+
+        $cart_items[] = $item;
+
+        $total +=
+            $item['harga'] *
+            $item['qty'];
+    }
+}
