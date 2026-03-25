@@ -115,7 +115,7 @@ if (isset($_POST['checkout'])) {
     foreach ($_SESSION['cart'] as $item) {
         $total += $item['harga'] * $item['qty'];
     }
-        // Generate kode transaksi
+    // Generate kode transaksi
     $kode_transaksi =
         "INV-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
 
