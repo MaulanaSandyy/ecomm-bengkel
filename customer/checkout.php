@@ -48,3 +48,24 @@ if (isset($_GET['id'])) {
     header("Location: checkout.php");
     exit();
 }
+
+// Handle Clear Cart
+if (isset($_GET['clear'])) {
+    unset($_SESSION['cart']);
+    $_SESSION['success'] = "Keranjang berhasil dikosongkan!";
+    header("Location: beli.php");
+    exit();
+}
+
+// Handle Remove Item
+if (isset($_GET['remove'])) {
+    $id = $_GET['remove'];
+
+    if (isset($_SESSION['cart'][$id])) {
+        unset($_SESSION['cart'][$id]);
+        $_SESSION['success'] = "Item berhasil dihapus dari keranjang!";
+    }
+
+    header("Location: checkout.php");
+    exit();
+}
