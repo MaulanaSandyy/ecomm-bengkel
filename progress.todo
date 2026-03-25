@@ -14,8 +14,9 @@ v pembayaran.php
 v riwayat.php
 v index.php
 v beli.php
-x checkout.php
-x booking.php
+v checkout.php
+v booking.php
+ADD = ajax_add_to_cart.php
 
 
 Bagian owner =
@@ -51,4 +52,10 @@ v get_detail_transaksi.php (admin)
 x jasa.php (admin)
 x sparepart.php (admin)
 x booking.php (admin)
+v beli.php (Customer)
+v booking.php (Customer)
+v checkout.php (Customer)
+v index.php (Customer)
+v pembayaran.php (Customer)
+v riwayat.php (Customer)
 
