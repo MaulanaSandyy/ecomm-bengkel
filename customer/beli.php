@@ -91,13 +91,11 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
 
 <div class="container-fluid px-0 px-lg-4" style="margin-top: -20px;">
     <div class="row g-0 g-lg-4">
-
         <div class="col-md-3 col-lg-2 d-none d-md-block" data-aos="fade-right">
             <div class="sidebar rounded-4 shadow-sm" style="top: 100px;">
                 <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
                     <i class="fas fa-user-circle me-2"></i>Menu Pelanggan
                 </h5>
-
                 <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
                 <a href="beli.php" class="active"><i class="fas fa-shopping-bag"></i>Beli Sparepart</a>
                 <a href="booking.php"><i class="fas fa-calendar-check"></i>Booking Service</a>

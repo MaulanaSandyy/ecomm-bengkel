@@ -82,7 +82,7 @@ $rekap_metode = query("SELECT metode_pembayaran,
                     <i class="fas fa-user-tie me-2"></i>Menu Owner
                 </h5>
                 <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
-                <a href="transaksi.php"><i class="fas fa-credit-card"></i>Transaksi</a>
+                <a href="booking.php"><i class="fas fa-credit-card"></i>Data Booking</a>
                 <a href="laporan.php" class="active"><i class="fas fa-chart-bar"></i>Laporan Keuangan</a>
             </div>
         </div>

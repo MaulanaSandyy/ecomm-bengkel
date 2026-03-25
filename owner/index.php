@@ -27,8 +27,8 @@ $total_booking = num_rows(query("SELECT * FROM booking"));
                     <i class="fas fa-home"></i>Dashboard
                 </a>
 
-                <a href="transaksi.php">
-                    <i class="fas fa-credit-card"></i>Transaksi
+                <a href="booking.php">
+                    <i class="fas fa-credit-card"></i>Data Booking
                 </a>
 
                 <a href="laporan.php">
