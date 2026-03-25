@@ -69,3 +69,32 @@ if (isset($_GET['remove'])) {
     header("Location: checkout.php");
     exit();
 }
+
+// Handle Update Quantity
+if (isset($_POST['update_qty'])) {
+
+    $id = $_POST['id'];
+    $qty = $_POST['qty'];
+
+    if (isset($_SESSION['cart'][$id]) && $qty > 0) {
+
+        $sparepart = fetch_assoc(
+            query("SELECT stok FROM sparepart WHERE id = $id")
+        );
+
+        if ($qty <= $sparepart['stok']) {
+
+            $_SESSION['cart'][$id]['qty'] = $qty;
+            $_SESSION['success'] = "Jumlah berhasil diupdate!";
+
+        } else {
+
+            $_SESSION['error'] =
+                "Stok tidak mencukupi! Maksimal " . $sparepart['stok'];
+
+        }
+    }
+
+    header("Location: checkout.php");
+    exit();
+}
