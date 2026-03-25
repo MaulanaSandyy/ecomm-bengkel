@@ -150,3 +150,22 @@ if (isset($_POST['checkout'])) {
                  WHERE id = $item_id"
             );
         }
+        unset($_SESSION['cart']);
+
+        $_SESSION['success'] =
+            "Checkout berhasil! Silakan lakukan pembayaran.";
+
+        header(
+            "Location: pembayaran.php?transaksi_id=$transaksi_id"
+        );
+        exit();
+
+    } else {
+
+        $_SESSION['error'] =
+            "Checkout gagal! Silakan coba lagi.";
+
+        header("Location: checkout.php");
+        exit();
+    }
+}
