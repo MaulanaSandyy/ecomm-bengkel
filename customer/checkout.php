@@ -6,28 +6,26 @@ cek_role(4); // Hanya customer
 
 $user_id = $_SESSION['user_id'];
 
-// Handle Add to Cart from URL
+// Handle Add to Cart from URL (untuk tombol "Beli" di beli.php)
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $sparepart = fetch_assoc(query("SELECT * FROM sparepart WHERE id = $id"));
     
     if ($sparepart && $sparepart['stok'] > 0) {
-
+        // Initialize cart if not exists
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
-
+        
+        // Add to cart
         if (isset($_SESSION['cart'][$id])) {
-
             if ($_SESSION['cart'][$id]['qty'] + 1 <= $sparepart['stok']) {
                 $_SESSION['cart'][$id]['qty']++;
                 $_SESSION['success'] = "Jumlah sparepart ditambah!";
             } else {
                 $_SESSION['error'] = "Stok tidak mencukupi!";
             }
-
         } else {
-
             $_SESSION['cart'][$id] = [
                 'id' => $sparepart['id'],
                 'nama' => $sparepart['nama_sparepart'],
@@ -37,14 +35,11 @@ if (isset($_GET['id'])) {
                 'stok' => $sparepart['stok'],
                 'qty' => 1
             ];
-
             $_SESSION['success'] = "Sparepart berhasil ditambahkan ke keranjang!";
         }
-
     } else {
         $_SESSION['error'] = "Stok sparepart habis!";
     }
-
     header("Location: checkout.php");
     exit();
 }
@@ -60,132 +55,94 @@ if (isset($_GET['clear'])) {
 // Handle Remove Item
 if (isset($_GET['remove'])) {
     $id = $_GET['remove'];
-
     if (isset($_SESSION['cart'][$id])) {
         unset($_SESSION['cart'][$id]);
         $_SESSION['success'] = "Item berhasil dihapus dari keranjang!";
     }
-
     header("Location: checkout.php");
     exit();
 }
 
 // Handle Update Quantity
 if (isset($_POST['update_qty'])) {
-
     $id = $_POST['id'];
     $qty = $_POST['qty'];
-
     if (isset($_SESSION['cart'][$id]) && $qty > 0) {
-
-        $sparepart = fetch_assoc(
-            query("SELECT stok FROM sparepart WHERE id = $id")
-        );
-
+        // Cek stok
+        $sparepart = fetch_assoc(query("SELECT stok FROM sparepart WHERE id = $id"));
         if ($qty <= $sparepart['stok']) {
-
             $_SESSION['cart'][$id]['qty'] = $qty;
             $_SESSION['success'] = "Jumlah berhasil diupdate!";
-
         } else {
-
-            $_SESSION['error'] =
-                "Stok tidak mencukupi! Maksimal " . $sparepart['stok'];
-
+            $_SESSION['error'] = "Stok tidak mencukupi! Maksimal " . $sparepart['stok'];
         }
     }
-
     header("Location: checkout.php");
     exit();
 }
 
-// Handle Checkout
+// Handle Checkout (Proses Pembayaran)
 if (isset($_POST['checkout'])) {
-
     if (!isset($_SESSION['cart']) || count($_SESSION['cart']) == 0) {
-
         $_SESSION['error'] = "Keranjang belanja kosong!";
         header("Location: beli.php");
         exit();
     }
-
+    
     // Hitung total
     $total = 0;
-
     foreach ($_SESSION['cart'] as $item) {
         $total += $item['harga'] * $item['qty'];
     }
-    // Generate kode transaksi
-    $kode_transaksi =
-        "INV-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
-
-    $query =
-        "INSERT INTO transaksi
-        (kode_transaksi, user_id, total_harga, status)
-        VALUES
-        ('$kode_transaksi', $user_id, $total, 'pending')";
-
+    
+    // Generate kode transaksi unik
+    $kode_transaksi = "INV-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
+    
+    // Insert ke tabel transaksi
+    $query = "INSERT INTO transaksi (kode_transaksi, user_id, total_harga, status) 
+              VALUES ('$kode_transaksi', $user_id, $total, 'pending')";
+    
     if (query($query)) {
-
         $transaksi_id = mysqli_insert_id($conn);
+        
+        // Insert detail transaksi
         foreach ($_SESSION['cart'] as $item) {
-
             $item_id = $item['id'];
             $item_type = 'sparepart';
             $harga = $item['harga'];
             $qty = $item['qty'];
-
-            $detail_query =
-                "INSERT INTO detail_transaksi
-                (transaksi_id, item_type, item_id, harga, jumlah)
-                VALUES
-                ($transaksi_id, '$item_type', $item_id, $harga, $qty)";
-
+            
+            $detail_query = "INSERT INTO detail_transaksi (transaksi_id, item_type, item_id, harga, jumlah) 
+                             VALUES ($transaksi_id, '$item_type', $item_id, $harga, $qty)";
             query($detail_query);
-
-            // kurangi stok
-            query(
-                "UPDATE sparepart
-                 SET stok = stok - $qty
-                 WHERE id = $item_id"
-            );
+            
+            // Kurangi stok sparepart
+            query("UPDATE sparepart SET stok = stok - $qty WHERE id = $item_id");
         }
+        
+        // Kosongkan keranjang
         unset($_SESSION['cart']);
-
-        $_SESSION['success'] =
-            "Checkout berhasil! Silakan lakukan pembayaran.";
-
-        header(
-            "Location: pembayaran.php?transaksi_id=$transaksi_id"
-        );
+        
+        $_SESSION['success'] = "Checkout berhasil! Silakan lakukan pembayaran.";
+        header("Location: pembayaran.php?transaksi_id=$transaksi_id");
         exit();
-
     } else {
-
-        $_SESSION['error'] =
-            "Checkout gagal! Silakan coba lagi.";
-
+        $_SESSION['error'] = "Checkout gagal! Silakan coba lagi.";
         header("Location: checkout.php");
         exit();
     }
 }
 
+// Ambil data keranjang
 $cart_items = [];
 $total = 0;
-
-if (isset($_SESSION['cart'])
-    && count($_SESSION['cart']) > 0) {
-
+if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
     foreach ($_SESSION['cart'] as $id => $item) {
-
         $cart_items[] = $item;
-
-        $total +=
-            $item['harga'] *
-            $item['qty'];
+        $total += $item['harga'] * $item['qty'];
     }
 }
-$title = "Keranjang Belanja";
 
+$title = "Keranjang Belanja";
 include '../includes/header.php';
 ?>
