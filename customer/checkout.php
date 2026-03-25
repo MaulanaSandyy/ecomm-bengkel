@@ -185,3 +185,7 @@ if (isset($_SESSION['cart'])
             $item['qty'];
     }
 }
+$title = "Keranjang Belanja";
+
+include '../includes/header.php';
+?>
