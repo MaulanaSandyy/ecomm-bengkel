@@ -128,3 +128,25 @@ if (isset($_POST['checkout'])) {
     if (query($query)) {
 
         $transaksi_id = mysqli_insert_id($conn);
+        foreach ($_SESSION['cart'] as $item) {
+
+            $item_id = $item['id'];
+            $item_type = 'sparepart';
+            $harga = $item['harga'];
+            $qty = $item['qty'];
+
+            $detail_query =
+                "INSERT INTO detail_transaksi
+                (transaksi_id, item_type, item_id, harga, jumlah)
+                VALUES
+                ($transaksi_id, '$item_type', $item_id, $harga, $qty)";
+
+            query($detail_query);
+
+            // kurangi stok
+            query(
+                "UPDATE sparepart
+                 SET stok = stok - $qty
+                 WHERE id = $item_id"
+            );
+        }
