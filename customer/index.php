@@ -21,7 +21,6 @@ include '../includes/header.php';
                 <a href="beli.php"><i class="fas fa-shopping-bag"></i>Beli Sparepart</a>
                 <a href="booking.php"><i class="fas fa-calendar-check"></i>Booking Service</a>
                 <a href="checkout.php"><i class="fas fa-shopping-cart"></i>Keranjang / Checkout</a>
-                <a href="pembayaran.php"><i class="fas fa-wallet"></i>Pembayaran</a>
                 <a href="riwayat.php"><i class="fas fa-receipt"></i>Riwayat Transaksi</a>
             </div>
         </div>
