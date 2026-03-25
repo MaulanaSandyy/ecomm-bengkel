@@ -146,3 +146,25 @@ if (isset($_SESSION['cart']) && count($_SESSION['cart']) > 0) {
 $title = "Keranjang Belanja";
 include '../includes/header.php';
 ?>
+<div class="container-fluid px-0 px-lg-4" style="margin-top: -20px;">
+    <div class="row g-0 g-lg-4">
+
+        <div class="col-md-3 col-lg-2 d-none d-md-block">
+            <div class="sidebar rounded-4 shadow-sm">
+
+                <h5 class="fw-bold px-3 mb-4 text-uppercase">
+                    Menu Pelanggan
+                </h5>
+
+                <a href="index.php">Dashboard</a>
+                <a href="beli.php">Beli Sparepart</a>
+                <a href="booking.php">Booking Service</a>
+                <a href="checkout.php" class="active">
+                    Keranjang / Checkout
+                </a>
+                <a href="riwayat.php">
+                    Riwayat Transaksi
+                </a>
+
+            </div>
+        </div>
