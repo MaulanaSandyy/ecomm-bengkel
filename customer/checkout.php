@@ -115,3 +115,16 @@ if (isset($_POST['checkout'])) {
     foreach ($_SESSION['cart'] as $item) {
         $total += $item['harga'] * $item['qty'];
     }
+        // Generate kode transaksi
+    $kode_transaksi =
+        "INV-" . date('Ymd') . "-" . strtoupper(substr(uniqid(), -6));
+
+    $query =
+        "INSERT INTO transaksi
+        (kode_transaksi, user_id, total_harga, status)
+        VALUES
+        ('$kode_transaksi', $user_id, $total, 'pending')";
+
+    if (query($query)) {
+
+        $transaksi_id = mysqli_insert_id($conn);
