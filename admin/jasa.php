@@ -30,8 +30,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $estimasi_waktu = escape_string($_POST['estimasi_waktu']);
     
     $gambar = '';
+    $upload_error = '';
+    
+    // Buat folder jika belum ada
+    $target_dir = "../uploads/jasa/";
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+    
     if ($_FILES['gambar']['name']) {
-        $gambar = upload_gambar($_FILES['gambar'], 'jasa');
+        // Cek error upload
+        if ($_FILES['gambar']['error'] != 0) {
+            $upload_error = "Error upload: " . $_FILES['gambar']['error'];
+        } else {
+            $file_name = time() . "_" . basename($_FILES['gambar']['name']);
+            $target_file = $target_dir . $file_name;
+            $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+            
+            // Cek apakah file gambar
+            $check = getimagesize($_FILES['gambar']['tmp_name']);
+            if ($check !== false) {
+                // Cek ukuran file (max 5MB)
+                if ($_FILES['gambar']['size'] <= 10000000) {
+                    // Izinkan format tertentu
+                    if (in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif'])) {
+                        if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
+                            $gambar = $file_name;
+                        } else {
+                            $upload_error = "Gagal memindahkan file. Cek permission folder.";
+                        }
+                    } else {
+                        $upload_error = "Format file tidak diizinkan. Gunakan JPG, JPEG, PNG, atau GIF.";
+                    }
+                } else {
+                    $upload_error = "Ukuran file terlalu besar. Maksimal 10MB.";
+                }
+            } else {
+                $upload_error = "File bukan gambar yang valid.";
+            }
+        }
     }
     
     if (isset($_POST['id']) && !empty($_POST['id'])) {
@@ -58,18 +95,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       estimasi_waktu = '$estimasi_waktu'
                       WHERE id = $id";
         }
-        $message = "Informasi jasa berhasil diupdate!";
+        
+        if (query($query)) {
+            if ($upload_error) {
+                $_SESSION['error'] = "Jasa berhasil diupdate, tetapi gambar gagal: " . $upload_error;
+            } else {
+                $_SESSION['success'] = "Jasa berhasil diupdate!";
+            }
+        } else {
+            $_SESSION['error'] = "Jasa gagal diupdate!";
+        }
     } else {
-        // Insert
-        $query = "INSERT INTO jasa (nama_jasa, deskripsi, harga, estimasi_waktu, gambar) 
-                  VALUES ('$nama_jasa', '$deskripsi', $harga, '$estimasi_waktu', '$gambar')";
-        $message = "Layanan jasa baru berhasil ditambahkan!";
-    }
-    
-    if (query($query)) {
-        $_SESSION['success'] = $message;
-    } else {
-        $_SESSION['error'] = "Data jasa gagal disimpan!";
+        // Insert - gambar wajib
+        if (!$gambar && !$upload_error) {
+            $_SESSION['error'] = "Gambar wajib diupload untuk jasa baru!";
+            header("Location: jasa.php");
+            exit();
+        }
+        
+        if ($gambar) {
+            $query = "INSERT INTO jasa (nama_jasa, deskripsi, harga, estimasi_waktu, gambar) 
+                      VALUES ('$nama_jasa', '$deskripsi', $harga, '$estimasi_waktu', '$gambar')";
+            
+            if (query($query)) {
+                $_SESSION['success'] = "Jasa berhasil ditambahkan!";
+            } else {
+                $_SESSION['error'] = "Jasa gagal ditambahkan!";
+                if (file_exists($target_dir . $gambar)) {
+                    unlink($target_dir . $gambar);
+                }
+            }
+        } else {
+            $_SESSION['error'] = "Gambar gagal diupload: " . $upload_error;
+        }
     }
     header("Location: jasa.php");
     exit();
@@ -93,6 +151,7 @@ include '../includes/header.php';
 <div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
     <div class="row g-0 g-lg-4">
         
+        <!-- Sidebar -->
         <div class="col-md-3 col-lg-2 d-none d-md-block" data-aos="fade-right">
             <div class="sidebar rounded-4 shadow-sm" style="top: 100px;">
                 <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
@@ -109,15 +168,18 @@ include '../includes/header.php';
             </div>
         </div>
         
+        <!-- Main Content -->
         <div class="col-md-9 col-lg-10 p-4 p-lg-0" data-aos="fade-left">
             <h3 class="fw-bold mb-4 text-dark">Katalog Layanan Jasa</h3>
             
             <div class="row g-4 flex-column-reverse flex-lg-row">
                 
+                <!-- Tabel Daftar Jasa -->
                 <div class="col-lg-8" data-aos="fade-up">
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-header bg-white pt-4 pb-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold text-dark mb-0"><i class="fas fa-list text-primary me-2"></i>Daftar Jasa Service</h5>
+                            <span class="badge bg-primary rounded-pill">Total: <?php echo num_rows($jasa); ?> Jasa</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -137,7 +199,7 @@ include '../includes/header.php';
                                             <td class="ps-4 text-muted"><?php echo $no++; ?></td>
                                             <td>
                                                 <div class="d-flex align-items-center gap-3">
-                                                    <?php if ($row['gambar']): ?>
+                                                    <?php if ($row['gambar'] && file_exists("../uploads/jasa/" . $row['gambar'])): ?>
                                                         <img src="../uploads/jasa/<?php echo $row['gambar']; ?>" 
                                                              alt="Jasa" class="rounded-3 shadow-sm" style="width: 50px; height: 50px; object-fit: cover;">
                                                     <?php else: ?>
@@ -147,7 +209,7 @@ include '../includes/header.php';
                                                     <?php endif; ?>
                                                     <div>
                                                         <h6 class="mb-0 fw-bold text-dark"><?php echo $row['nama_jasa']; ?></h6>
-                                                        <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;"><?php echo $row['deskripsi']; ?></small>
+                                                        <small class="text-muted text-truncate d-inline-block" style="max-width: 150px;"><?php echo substr($row['deskripsi'], 0, 50); ?>...</small>
                                                     </div>
                                                 </div>
                                             </td>
@@ -177,6 +239,7 @@ include '../includes/header.php';
                     </div>
                 </div>
 
+                <!-- Form Tambah/Edit Jasa -->
                 <div class="col-lg-4" data-aos="fade-down">
                     <div class="card border-0 shadow-sm rounded-4 sticky-lg-top" style="top: 100px; z-index: 10;">
                         <div class="card-header <?php echo $edit_data ? 'bg-warning' : 'bg-primary'; ?> text-white pt-4 pb-3 px-4 rounded-top-4 border-0">
@@ -216,20 +279,26 @@ include '../includes/header.php';
                                 </div>
                                 
                                 <div class="mb-4">
-                                    <label class="form-label text-muted small fw-bold">Foto/Ilustrasi <?php echo $edit_data ? '<span class="fw-normal">(Opsional)</span>' : ''; ?></label>
+                                    <label class="form-label text-muted small fw-bold">Foto/Ilustrasi <?php echo $edit_data ? '<span class="fw-normal">(Opsional)</span>' : '<span class="text-danger">*</span>'; ?></label>
+                                    <small class="d-block text-muted mb-2">Format: JPG, JPEG, PNG, GIF. Maks: 10MB</small>
                                     
-                                    <div class="position-relative">
-                                        <input type="file" class="form-control bg-light" name="gambar" accept="image/*" id="gambarInput"
-                                               <?php echo $edit_data ? '' : 'required'; ?> onchange="previewImage(this, 'previewImg')">
+                                    <input type="file" class="form-control bg-light" name="gambar" accept="image/*" id="gambarInput"
+                                           <?php echo $edit_data ? '' : 'required'; ?> onchange="previewImage(this, 'previewImg')">
+                                    
+                                    <!-- Preview gambar baru -->
+                                    <div id="previewContainer" class="mt-3 text-center rounded-3 bg-light border p-2" style="display: none;">
+                                        <img id="previewImg" src="#" class="img-fluid rounded-3" style="max-height: 150px; object-fit: cover;">
+                                        <small class="d-block mt-2 text-muted fst-italic">Preview gambar baru</small>
                                     </div>
-
-                                    <div class="mt-3 text-center rounded-3 bg-light border p-2 <?php echo ($edit_data && $edit_data['gambar']) ? '' : 'd-none'; ?>" id="previewContainer">
-                                        <img id="previewImg" src="<?php echo ($edit_data && $edit_data['gambar']) ? '../uploads/jasa/' . $edit_data['gambar'] : ''; ?>" 
-                                             class="img-fluid rounded-3" style="max-height: 150px; object-fit: cover;">
-                                        <?php if ($edit_data && $edit_data['gambar']): ?>
-                                            <small class="d-block mt-2 text-muted fst-italic">File terpasang: <?php echo $edit_data['gambar']; ?></small>
-                                        <?php endif; ?>
-                                    </div>
+                                    
+                                    <!-- Gambar saat ini (untuk edit) -->
+                                    <?php if ($edit_data && $edit_data['gambar'] && file_exists("../uploads/jasa/" . $edit_data['gambar'])): ?>
+                                        <div class="mt-3 text-center rounded-3 bg-light border p-2">
+                                            <img src="../uploads/jasa/<?php echo $edit_data['gambar']; ?>" 
+                                                 class="img-fluid rounded-3" style="max-height: 150px; object-fit: cover;">
+                                            <small class="d-block mt-2 text-muted fst-italic">Gambar saat ini: <?php echo $edit_data['gambar']; ?></small>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <div class="d-flex gap-2">
@@ -251,12 +320,69 @@ include '../includes/header.php';
 </div>
 
 <script>
-// Penambahan sedikit JS untuk menampilkan preview box saat user memilih gambar baru
-document.getElementById('gambarInput').addEventListener('change', function() {
-    if(this.files && this.files[0]) {
-        document.getElementById('previewContainer').classList.remove('d-none');
+// Preview gambar sebelum upload
+function previewImage(input, previewId) {
+    const previewContainer = document.getElementById('previewContainer');
+    const previewImg = document.getElementById(previewId);
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewContainer.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        previewContainer.style.display = 'none';
+        previewImg.src = '#';
     }
+}
+
+// Notifikasi dengan SweetAlert
+<?php if(isset($_SESSION['success'])): ?>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: '<?php echo $_SESSION['success']; ?>',
+    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#667eea'
 });
+<?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['error'])): ?>
+Swal.fire({
+    icon: 'error',
+    title: 'Gagal!',
+    text: '<?php echo $_SESSION['error']; ?>',
+    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#ef4444'
+});
+<?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
+// Fungsi konfirmasi hapus
+function confirmDelete(url, message) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+    return false;
+}
 </script>
 
 <?php include '../includes/footer.php'; ?>

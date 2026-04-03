@@ -37,41 +37,41 @@ function escape_string($string) {
     return mysqli_real_escape_string($conn, $string);
 }
 
-// Fungsi untuk upload gambar
+// PERBAIKAN: Fungsi untuk upload gambar
 function upload_gambar($file, $folder) {
+    // Buat direktori jika belum ada
     $target_dir = "../uploads/" . $folder . "/";
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0777, true);
     }
     
-    $gambar = time() . "_" . basename($file["name"]);
-    $target_file = $target_dir . $gambar;
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-    
-    // Cek apakah file gambar
-    $check = getimagesize($file["tmp_name"]);
-    if ($check !== false) {
-        $uploadOk = 1;
-    } else {
+    // Cek apakah ada file yang diupload
+    if (!isset($file) || $file['error'] == 4 || $file['size'] == 0) {
         return false;
     }
     
-    // Cek ukuran file (max 5MB)
-    if ($file["size"] > 5000000) {
+    // Generate nama file unik
+    $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    $new_filename = time() . '_' . uniqid() . '.' . $file_extension;
+    $target_file = $target_dir . $new_filename;
+    
+    // Validasi file
+    $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+    if (!in_array($file_extension, $allowed_types)) {
         return false;
     }
     
-    // Izinkan format tertentu
-    if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+    // Validasi ukuran (max 5MB)
+    if ($file['size'] > 5000000) {
         return false;
     }
     
-    if (move_uploaded_file($file["tmp_name"], $target_file)) {
-        return $gambar;
-    } else {
-        return false;
+    // Upload file
+    if (move_uploaded_file($file['tmp_name'], $target_file)) {
+        return $new_filename;
     }
+    
+    return false;
 }
 
 // Cek login
