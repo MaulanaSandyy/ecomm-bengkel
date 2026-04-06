@@ -208,7 +208,7 @@ include '../includes/header.php';
 }
 </style>
 
-<div class="container-fluid px-0 px-lg-4" style="margin-top: -20px;">
+<div class="container-fluid px-0 px-lg-4">
     <div class="row g-0 g-lg-4">
         <div class="col-md-3 col-lg-2 d-none d-md-block" data-aos="fade-right">
             <div class="sidebar rounded-4 shadow-sm" style="top: 100px;">

@@ -39,20 +39,20 @@ $booking = fetch_assoc(query("SELECT b.*,
             <div class="detail-section">
                 <div class="detail-label">Informasi Booking</div>
                 <table class="table table-sm">
-                    32
-                        <td width="120"><strong>Kode Booking</strong>32
-                        <td>: #BKG-<?php echo str_pad($booking['id'], 5, '0', STR_PAD_LEFT); ?>32
+                    
+                        <td width="120"><strong>Kode Booking</strong>
+                        <td>: #BKG-<?php echo str_pad($booking['id'], 5, '0', STR_PAD_LEFT); ?>
                     </tr>
-                    32
-                        <td><strong>Tanggal Booking</strong>32
-                        <td>: <?php echo date('d/m/Y', strtotime($booking['tanggal_booking'])); ?> (<?php echo date('l', strtotime($booking['tanggal_booking'])); ?>)32
+                    
+                        <td><strong>Tanggal Booking</strong>
+                        <td>: <?php echo date('d/m/Y', strtotime($booking['tanggal_booking'])); ?> (<?php echo date('l', strtotime($booking['tanggal_booking'])); ?>)
                     </tr>
-                    32
-                        <td><strong>Jam Booking</strong>32
-                        <td>: <?php echo $booking['jam_booking']; ?> WIB32
+                    
+                        <td><strong>Jam Booking</strong>
+                        <td>: <?php echo $booking['jam_booking']; ?> WIB
                     </tr>
-                    32
-                        <td><strong>Status Booking</strong>32
+                    
+                        <td><strong>Status Booking</strong>
                         <td>: 
                             <?php
                             $status_text = [
@@ -71,12 +71,12 @@ $booking = fetch_assoc(query("SELECT b.*,
                             <span class="status-badge <?php echo $status_class[$booking['status']]; ?>">
                                 <?php echo $status_text[$booking['status']]; ?>
                             </span>
-                        32
+                        
                     </tr>
                     <?php if($booking['created_at']): ?>
                     <tr>
-                        <td><strong>Dibuat Pada</strong>32
-                        <td>: <?php echo date('d/m/Y H:i', strtotime($booking['created_at'])); ?>32
+                        <td><strong>Dibuat Pada</strong>
+                        <td>: <?php echo date('d/m/Y H:i', strtotime($booking['created_at'])); ?>
                     </tr>
                     <?php endif; ?>
                 </table>
@@ -87,21 +87,21 @@ $booking = fetch_assoc(query("SELECT b.*,
             <div class="detail-section">
                 <div class="detail-label">Informasi Customer</div>
                 <table class="table table-sm">
-                    32
-                        <td width="120"><strong>Nama Lengkap</strong>32
-                        <td>: <?php echo $booking['customer_name']; ?>32
+                    
+                        <td width="120"><strong>Nama Lengkap</strong>
+                        <td>: <?php echo $booking['customer_name']; ?>
                     </tr>
-                    32
-                        <td><strong>No. HP</strong>32
-                        <td>: <?php echo $booking['no_hp']; ?>32
+                    
+                        <td><strong>No. HP</strong>
+                        <td>: <?php echo $booking['no_hp']; ?>
                     </tr>
-                    32
-                        <td><strong>Email</strong>32
-                        <td>: <?php echo $booking['email']; ?>32
+                    
+                        <td><strong>Email</strong>
+                        <td>: <?php echo $booking['email']; ?>
                     </tr>
-                    32
-                        <td><strong>Alamat</strong>32
-                        <td>: <?php echo $booking['alamat']; ?>32
+                    
+                        <td><strong>Alamat</strong>
+                        <td>: <?php echo $booking['alamat']; ?>
                     </tr>
                 </table>
             </div>
@@ -115,25 +115,25 @@ $booking = fetch_assoc(query("SELECT b.*,
                 <table class="table table-sm">
                     <?php if($booking['nama_jasa']): ?>
                     <tr>
-                        <td width="120"><strong>Jasa Service</strong>32
-                        <td>: <?php echo $booking['nama_jasa']; ?>32
+                        <td width="120"><strong>Jasa Service</strong>
+                        <td>: <?php echo $booking['nama_jasa']; ?>
                     </tr>
                     <tr>
-                        <td><strong>Estimasi Waktu</strong>32
-                        <td>: <?php echo $booking['estimasi_waktu']; ?>32
+                        <td><strong>Estimasi Waktu</strong>
+                        <td>: <?php echo $booking['estimasi_waktu']; ?>
                     </tr>
                     <tr>
-                        <td><strong>Harga Jasa</strong>32
-                        <td>: Rp <?php echo number_format($booking['jasa_harga'], 0, ',', '.'); ?>32
+                        <td><strong>Harga Jasa</strong>
+                        <td>: Rp <?php echo number_format($booking['jasa_harga'], 0, ',', '.'); ?>
                     </tr>
                     <?php else: ?>
                     <tr>
-                        <td colspan="2">Tidak memilih jasa (Konsultasi)32
+                        <td colspan="2">Tidak memilih jasa (Konsultasi)
                     </tr>
                     <?php endif; ?>
                     <tr>
-                        <td><strong>Keluhan</strong>32
-                        <td>: <?php echo nl2br($booking['keluhan']); ?>32
+                        <td><strong>Keluhan</strong>
+                        <td>: <?php echo nl2br($booking['keluhan']); ?>
                     </tr>
                 </table>
             </div>
@@ -145,7 +145,7 @@ $booking = fetch_assoc(query("SELECT b.*,
                 <div class="detail-label">Informasi Service</div>
                 <table class="table table-sm">
                     <tr>
-                        <td width="120"><strong>Status Service</strong>32
+                        <td width="120"><strong>Status Service</strong>
                         <td>: 
                             <?php
                             $service_text = [
@@ -162,30 +162,30 @@ $booking = fetch_assoc(query("SELECT b.*,
                             <span class="badge <?php echo $service_class[$booking['service_status']]; ?>">
                                 <?php echo $service_text[$booking['service_status']]; ?>
                             </span>
-                        32
+                        
                     </tr>
                     <?php if($booking['pegawai_name']): ?>
                     <tr>
-                        <td><strong>Mekanik</strong>32
-                        <td>: <?php echo $booking['pegawai_name']; ?>32
+                        <td><strong>Mekanik</strong>
+                        <td>: <?php echo $booking['pegawai_name']; ?>
                     </tr>
                     <?php endif; ?>
                     <?php if($booking['biaya_tambahan'] > 0): ?>
                     <tr>
-                        <td><strong>Biaya Tambahan</strong>32
-                        <td>: Rp <?php echo number_format($booking['biaya_tambahan'], 0, ',', '.'); ?>32
+                        <td><strong>Biaya Tambahan</strong>
+                        <td>: Rp <?php echo number_format($booking['biaya_tambahan'], 0, ',', '.'); ?>
                     </tr>
                     <?php endif; ?>
                     <?php if($booking['catatan_service']): ?>
                     <tr>
-                        <td><strong>Catatan Service</strong>32
-                        <td>: <?php echo nl2br($booking['catatan_service']); ?>32
+                        <td><strong>Catatan Service</strong>
+                        <td>: <?php echo nl2br($booking['catatan_service']); ?>
                     </tr>
                     <?php endif; ?>
                     <?php if($booking['tanggal_selesai']): ?>
                     <tr>
-                        <td><strong>Tanggal Selesai</strong>32
-                        <td>: <?php echo date('d/m/Y', strtotime($booking['tanggal_selesai'])); ?>32
+                        <td><strong>Tanggal Selesai</strong>
+                        <td>: <?php echo date('d/m/Y', strtotime($booking['tanggal_selesai'])); ?>
                     </tr>
                     <?php endif; ?>
                 </table>
