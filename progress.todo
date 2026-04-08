@@ -70,14 +70,19 @@ BUG ==
 
 improve fungsi == 
 # customer/beli.php = 
-    v 1. setelah menambahkan checkout harus tambahkan fitur mau berapa banyak barangnya dimasukan ke keranjang, keranjang harus berwarna merah bubble dengan angka banyaknya barang yang dimasukkan ke keranjang
+    v 1. setelah menambahkan checkout harus tambahkan fitur mau berapa banyak barangnya dimasukan ke keranjang, keranjang harus berwarna merah bubble 
+            dengan angka banyaknya barang yang dimasukkan ke keranjang
     v 2. setelah ditambahkan ke checkout, setiap kali menambahkan jangan ke refresh halamannya
 # customer/booking.php = 
     v 1. tampilan pada pilih jasa servicenya harus ada gambar jasa booking servis nya
     x 2. tambahkan lokasi tempat untuk melakukan servicenya dimana
+    x 
 # customer/checkout.php =
     x 1. ketika ingin melakukan "proses checkout sekarang", munculkan beberapa tampilan payment seperti bayar transfer menggunakan (bca, mandiri, bank permata, bjb, cimb,
         seabank) dengan nomer rekening dummy dan animasi transaksi panding -> berhasil
 
 IDE === 
-# customer/booking.php = menampilkan jumlah Pegawai yang tersedia atau tidak sibuk
+# customer/booking.php = 
+    x 1. menampilkan jumlah Pegawai yang tersedia atau tidak sibuk
+    x 2. nanti pegawai yang gak sibuk atau kerjaannya bagian service keliling akan dapat menerima service-an bookingan itu, dan hanya pegawai itu yang bisa konfirmasi 
+            selesai dll dan admin, pegawai lain gak bisa konfirmasi service atau ubah service ke selesai selain pegawai yang mengerjakan dan admin
