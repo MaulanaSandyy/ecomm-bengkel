@@ -25,19 +25,53 @@ if (isset($_GET['delete'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama_sparepart = escape_string($_POST['nama_sparepart']);
     $deskripsi = escape_string($_POST['deskripsi']);
-    $harga = $_POST['harga'];
-    $stok = $_POST['stok'];
+    $harga = (int)$_POST['harga'];
+    $stok = (int)$_POST['stok'];
     $merek = escape_string($_POST['merek']);
     
     $gambar = '';
-    if ($_FILES['gambar']['name']) {
-        $gambar = upload_gambar($_FILES['gambar'], 'sparepart');
+    $upload_error = '';
+    
+    // Buat folder jika belum ada
+    $target_dir = "../uploads/sparepart/";
+    if (!file_exists($target_dir)) {
+        mkdir($target_dir, 0777, true);
+    }
+    
+    // Proses upload gambar
+    if (isset($_FILES['gambar']) && $_FILES['gambar']['error'] != 4 && $_FILES['gambar']['size'] > 0) {
+        $file_name = time() . '_' . uniqid() . '_' . basename($_FILES['gambar']['name']);
+        $target_file = $target_dir . $file_name;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        
+        // Cek apakah file gambar
+        $check = getimagesize($_FILES['gambar']['tmp_name']);
+        if ($check !== false) {
+            // Cek ukuran file (max 5MB)
+            if ($_FILES['gambar']['size'] <= 5000000) {
+                // Izinkan format tertentu
+                if (in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                    if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
+                        $gambar = $file_name;
+                    } else {
+                        $upload_error = "Gagal memindahkan file. Cek permission folder.";
+                    }
+                } else {
+                    $upload_error = "Format file tidak diizinkan. Gunakan JPG, JPEG, PNG, GIF, atau WEBP.";
+                }
+            } else {
+                $upload_error = "Ukuran file terlalu besar. Maksimal 5MB.";
+            }
+        } else {
+            $upload_error = "File bukan gambar yang valid.";
+        }
     }
     
     if (isset($_POST['id']) && !empty($_POST['id'])) {
         // Update
         $id = $_POST['id'];
         if ($gambar) {
+            // Hapus gambar lama
             $old = fetch_assoc(query("SELECT gambar FROM sparepart WHERE id = $id"));
             if ($old['gambar'] && file_exists("../uploads/sparepart/" . $old['gambar'])) {
                 unlink("../uploads/sparepart/" . $old['gambar']);
@@ -59,18 +93,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                       merek = '$merek'
                       WHERE id = $id";
         }
-        $message = "Informasi sparepart berhasil diupdate!";
+        
+        if (query($query)) {
+            if ($upload_error) {
+                $_SESSION['error'] = "Sparepart berhasil diupdate, tetapi gambar gagal: " . $upload_error;
+            } else {
+                $_SESSION['success'] = "Sparepart berhasil diupdate!";
+            }
+        } else {
+            $_SESSION['error'] = "Sparepart gagal diupdate!";
+        }
     } else {
-        // Insert
-        $query = "INSERT INTO sparepart (nama_sparepart, deskripsi, harga, stok, merek, gambar) 
-                  VALUES ('$nama_sparepart', '$deskripsi', $harga, $stok, '$merek', '$gambar')";
-        $message = "Katalog sparepart berhasil ditambahkan!";
-    }
-    
-    if (query($query)) {
-        $_SESSION['success'] = $message;
-    } else {
-        $_SESSION['error'] = "Data sparepart gagal disimpan!";
+        // Insert - untuk insert baru, gambar wajib
+        if (!$gambar && !$upload_error) {
+            $_SESSION['error'] = "Gambar wajib diupload untuk sparepart baru!";
+            header("Location: sparepart.php");
+            exit();
+        }
+        
+        if ($gambar) {
+            $query = "INSERT INTO sparepart (nama_sparepart, deskripsi, harga, stok, merek, gambar) 
+                      VALUES ('$nama_sparepart', '$deskripsi', $harga, $stok, '$merek', '$gambar')";
+            
+            if (query($query)) {
+                $_SESSION['success'] = "Sparepart berhasil ditambahkan!";
+            } else {
+                $_SESSION['error'] = "Sparepart gagal ditambahkan!";
+                // Hapus gambar yang sudah terupload jika gagal insert
+                if (file_exists($target_dir . $gambar)) {
+                    unlink($target_dir . $gambar);
+                }
+            }
+        } else {
+            $_SESSION['error'] = "Gambar gagal diupload: " . $upload_error;
+        }
     }
     header("Location: sparepart.php");
     exit();
@@ -91,6 +147,38 @@ $title = "Kelola Sparepart";
 include '../includes/header.php';
 ?>
 
+<style>
+.image-preview {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+    padding: 5px;
+    background: #f8f9fa;
+}
+
+.current-image {
+    position: relative;
+    display: inline-block;
+}
+
+.current-image img {
+    max-width: 80px;
+    max-height: 80px;
+    border-radius: 10px;
+    border: 2px solid #667eea;
+    object-fit: cover;
+}
+
+.table-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+</style>
+
 <div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
     <div class="row g-0 g-lg-4">
         
@@ -99,14 +187,14 @@ include '../includes/header.php';
                 <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
                     <i class="fas fa-shield-alt me-2"></i>Menu Admin
                 </h5>
-                <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
-                <a href="users.php"><i class="fas fa-users"></i>Kelola Users</a>
-                <a href="jasa.php"><i class="fas fa-wrench"></i>Kelola Jasa</a>
-                <a href="sparepart.php" class="active"><i class="fas fa-box-open"></i>Kelola Sparepart</a>
-                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
-                <a href="transaksi.php"><i class="fas fa-cash-register"></i>Kelola Transaksi</a>
-                <a href="profil.php"><i class="fas fa-building"></i>Profil Bengkel</a>
-                <a href="qris.php"><i class="fas fa-qrcode"></i>Upload QRIS</a>
+                <a href="index.php"><i class="fas fa-home me-2"></i>Dashboard</a>
+                <a href="users.php"><i class="fas fa-users me-2"></i>Kelola Users</a>
+                <a href="jasa.php"><i class="fas fa-wrench me-2"></i>Kelola Jasa</a>
+                <a href="sparepart.php" class="active"><i class="fas fa-box-open me-2"></i>Kelola Sparepart</a>
+                <a href="booking.php"><i class="fas fa-calendar-alt me-2"></i>Kelola Booking</a>
+                <a href="transaksi.php"><i class="fas fa-cash-register me-2"></i>Kelola Transaksi</a>
+                <a href="profil.php"><i class="fas fa-building me-2"></i>Profil Bengkel</a>
+                <a href="qris.php"><i class="fas fa-qrcode me-2"></i>Upload QRIS</a>
             </div>
         </div>
         
@@ -118,6 +206,7 @@ include '../includes/header.php';
                     <div class="card border-0 shadow-sm rounded-4 h-100">
                         <div class="card-header bg-white pt-4 pb-3 px-4 border-bottom d-flex justify-content-between align-items-center">
                             <h5 class="fw-bold text-dark mb-0"><i class="fas fa-boxes text-info me-2"></i>Daftar Sparepart</h5>
+                            <span class="badge bg-primary rounded-pill">Total: <?php echo num_rows($sparepart); ?> Item</span>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
@@ -135,12 +224,12 @@ include '../includes/header.php';
                                         <tr>
                                             <td class="ps-4">
                                                 <div class="d-flex align-items-center gap-3">
-                                                    <?php if ($row['gambar']): ?>
+                                                    <?php if ($row['gambar'] && file_exists("../uploads/sparepart/" . $row['gambar'])): ?>
                                                         <img src="../uploads/sparepart/<?php echo $row['gambar']; ?>" 
-                                                             alt="Sparepart" class="rounded-3 shadow-sm border" style="width: 50px; height: 50px; object-fit: cover;">
+                                                             alt="Sparepart" class="table-image shadow-sm border">
                                                     <?php else: ?>
                                                         <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted border" style="width: 50px; height: 50px;">
-                                                            <i class="fas fa-cogs"></i>
+                                                            <i class="fas fa-cogs fa-2x opacity-50"></i>
                                                         </div>
                                                     <?php endif; ?>
                                                     <div>
@@ -174,7 +263,10 @@ include '../includes/header.php';
                                         <?php endwhile; ?>
                                         
                                         <?php if(num_rows($sparepart) == 0): ?>
-                                            <tr><td colspan="4" class="text-center py-4 text-muted">Belum ada data inventaris sparepart.</td></tr>
+                                        <tr><td colspan="4" class="text-center py-5 text-muted">
+                                            <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
+                                            <p>Belum ada data inventaris sparepart.</p>
+                                        </td></tr>
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
@@ -192,7 +284,7 @@ include '../includes/header.php';
                             </h5>
                         </div>
                         <div class="card-body p-4 bg-white rounded-bottom-4">
-                            <form method="POST" action="" enctype="multipart/form-data">
+                            <form method="POST" action="" enctype="multipart/form-data" id="sparepartForm">
                                 <?php if ($edit_data): ?>
                                     <input type="hidden" name="id" value="<?php echo $edit_data['id']; ?>">
                                 <?php endif; ?>
@@ -228,17 +320,35 @@ include '../includes/header.php';
                                 </div>
                                 
                                 <div class="mb-4">
-                                    <label class="form-label text-muted small fw-bold">Foto Produk <?php echo $edit_data ? '<span class="fw-normal">(Opsional)</span>' : ''; ?></label>
-                                    <input type="file" class="form-control bg-light" name="gambar" accept="image/*" id="gambarInputSp"
-                                           <?php echo $edit_data ? '' : 'required'; ?> onchange="previewImage(this, 'previewImgSp')">
-                                           
-                                    <div class="mt-3 text-center rounded-3 bg-light border p-2 <?php echo ($edit_data && $edit_data['gambar']) ? '' : 'd-none'; ?>" id="previewContainerSp">
-                                        <img id="previewImgSp" src="<?php echo ($edit_data && $edit_data['gambar']) ? '../uploads/sparepart/' . $edit_data['gambar'] : ''; ?>" 
-                                             class="img-fluid rounded-3" style="max-height: 150px; object-fit: cover;">
-                                        <?php if ($edit_data && $edit_data['gambar']): ?>
-                                            <small class="d-block mt-2 text-muted fst-italic"><?php echo $edit_data['gambar']; ?></small>
+                                    <label class="form-label text-muted small fw-bold">
+                                        Foto Produk 
+                                        <?php if ($edit_data): ?>
+                                            <span class="fw-normal text-muted">(Kosongkan jika tidak ingin mengubah)</span>
+                                        <?php else: ?>
+                                            <span class="text-danger">*</span>
                                         <?php endif; ?>
+                                    </label>
+                                    <input type="file" class="form-control bg-light" name="gambar" accept="image/*" id="gambarInputSp"
+                                           <?php echo $edit_data ? '' : 'required'; ?>>
+                                    <small class="text-muted">Format: JPG, JPEG, PNG, GIF. Maks: 5MB</small>
+                                    
+                                    <!-- Preview Gambar Baru -->
+                                    <div id="previewContainerSp" class="mt-3 text-center rounded-3 bg-light border p-2" style="display: none;">
+                                        <img id="previewImgSp" class="image-preview" src="#" alt="Preview">
+                                        <small class="d-block mt-2 text-muted">Preview gambar baru</small>
                                     </div>
+                                    
+                                    <!-- Gambar Saat Ini (untuk edit) -->
+                                    <?php if ($edit_data && $edit_data['gambar'] && file_exists("../uploads/sparepart/" . $edit_data['gambar'])): ?>
+                                        <div class="mt-3 text-center rounded-3 bg-light border p-2" id="currentImageContainer">
+                                            <label class="small text-muted">Gambar Saat Ini:</label>
+                                            <br>
+                                            <img src="../uploads/sparepart/<?php echo $edit_data['gambar']; ?>" 
+                                                 class="current-image img-fluid rounded-3" style="max-height: 100px; object-fit: cover;">
+                                            <br>
+                                            <small class="text-muted"><?php echo $edit_data['gambar']; ?></small>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 
                                 <div class="d-flex gap-2">
@@ -259,12 +369,77 @@ include '../includes/header.php';
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.getElementById('gambarInputSp').addEventListener('change', function() {
-    if(this.files && this.files[0]) {
-        document.getElementById('previewContainerSp').classList.remove('d-none');
+// Preview gambar sebelum upload
+document.getElementById('gambarInputSp').addEventListener('change', function(e) {
+    const previewContainer = document.getElementById('previewContainerSp');
+    const previewImg = document.getElementById('previewImgSp');
+    
+    if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            previewContainer.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(e.target.files[0]);
+    } else {
+        previewContainer.style.display = 'none';
+        previewImg.src = '#';
     }
 });
+
+// Fungsi konfirmasi hapus dengan SweetAlert
+function confirmDelete(url, message) {
+    Swal.fire({
+        title: 'Apakah Anda yakin?',
+        text: message,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = url;
+        }
+    });
+    return false;
+}
+
+// Notifikasi sukses/error
+<?php if(isset($_SESSION['success'])): ?>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: '<?php echo $_SESSION['success']; ?>',
+    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#667eea'
+});
+<?php unset($_SESSION['success']); ?>
+<?php endif; ?>
+
+<?php if(isset($_SESSION['error'])): ?>
+Swal.fire({
+    icon: 'error',
+    title: 'Gagal!',
+    text: '<?php echo $_SESSION['error']; ?>',
+    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#ef4444'
+});
+<?php unset($_SESSION['error']); ?>
+<?php endif; ?>
+
+// Tooltip initialization
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
+})
 </script>
 
 <?php include '../includes/footer.php'; ?>
