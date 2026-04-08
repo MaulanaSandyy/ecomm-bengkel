@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $check = getimagesize($_FILES['gambar']['tmp_name']);
         if ($check !== false) {
             // Cek ukuran file (max 5MB)
-            if ($_FILES['gambar']['size'] <= 5000000) {
+            if ($_FILES['gambar']['size'] <= 8000000) {
                 // Izinkan format tertentu
                 if (in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
                     if (move_uploaded_file($_FILES['gambar']['tmp_name'], $target_file)) {
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $upload_error = "Format file tidak diizinkan. Gunakan JPG, JPEG, PNG, GIF, atau WEBP.";
                 }
             } else {
-                $upload_error = "Ukuran file terlalu besar. Maksimal 5MB.";
+                $upload_error = "Ukuran file terlalu besar. Maksimal 8MB.";
             }
         } else {
             $upload_error = "File bukan gambar yang valid.";
@@ -316,7 +316,7 @@ include '../includes/header.php';
                                 
                                 <div class="mb-3">
                                     <label class="form-label text-muted small fw-bold">Deskripsi Produk</label>
-                                    <textarea class="form-control bg-light" name="deskripsi" rows="3" placeholder="Informasi detail sparepart..." required><?php echo $edit_data['deskripsi'] ?? ''; ?></textarea>
+                                    <textarea class="form-control bg-light" name="deskripsi" rows="3" placeholder="Informasi detail sparepsart..." required><?php echo $edit_data['deskripsi'] ?? ''; ?></textarea>
                                 </div>
                                 
                                 <div class="mb-4">
@@ -330,7 +330,7 @@ include '../includes/header.php';
                                     </label>
                                     <input type="file" class="form-control bg-light" name="gambar" accept="image/*" id="gambarInputSp"
                                            <?php echo $edit_data ? '' : 'required'; ?>>
-                                    <small class="text-muted">Format: JPG, JPEG, PNG, GIF. Maks: 5MB</small>
+                                    <small class="text-muted">Format: JPG, JPEG, PNG, GIF. Maks: 8MB</small>
                                     
                                     <!-- Preview Gambar Baru -->
                                     <div id="previewContainerSp" class="mt-3 text-center rounded-3 bg-light border p-2" style="display: none;">
