@@ -190,7 +190,7 @@ include '../includes/header.php';
     font-size: 12px;
 }
 
-/* Jasa Grid untuk tampilan yang lebih baik */
+/* Jasa Grid */
 .jasa-grid {
     max-height: 400px;
     overflow-y: auto;
@@ -271,10 +271,6 @@ include '../includes/header.php';
     margin-bottom: 15px;
 }
 
-.booking-detail-card:last-child {
-    margin-bottom: 0;
-}
-
 .riwayat-item {
     transition: all 0.2s ease;
     border-left: 4px solid transparent;
@@ -291,7 +287,6 @@ include '../includes/header.php';
     gap: 10px;
 }
 
-/* Gambar jasa di riwayat */
 .jasa-thumbnail {
     width: 40px;
     height: 40px;
@@ -702,15 +697,10 @@ let selectedJam = null;
 
 // Fungsi untuk memilih jasa
 function selectJasa(element, jasaId) {
-    // Hapus class selected dari semua jasa card
     document.querySelectorAll('.jasa-card').forEach(card => {
         card.classList.remove('selected');
     });
-    
-    // Tambah class selected ke card yang dipilih
     element.classList.add('selected');
-    
-    // Set value hidden input
     document.getElementById('selectedJasaId').value = jasaId;
 }
 
@@ -719,28 +709,21 @@ function pilihJam(element) {
     if (element.classList.contains('disabled')) {
         return;
     }
-    
-    // Hapus class selected dari semua jam
     document.querySelectorAll('.jam-card').forEach(card => {
         card.classList.remove('selected');
     });
-    
-    // Tambah class selected ke jam yang dipilih
     element.classList.add('selected');
     selectedJam = element.getAttribute('data-jam');
     document.getElementById('jam_booking').value = selectedJam;
     document.getElementById('jamError').style.display = 'none';
 }
 
-// Cek ketersediaan jam berdasarkan tanggal
+// Cek ketersediaan jam
 async function cekKetersediaanJam(tanggal) {
     if (!tanggal) return;
-    
     try {
         const response = await fetch(`booking.php?get_jam=1&tanggal=${tanggal}`);
         const bookedJams = await response.json();
-        
-        // Reset semua jam
         document.querySelectorAll('.jam-card').forEach(card => {
             card.classList.remove('disabled', 'selected');
             const jam = card.getAttribute('data-jam');
@@ -748,11 +731,8 @@ async function cekKetersediaanJam(tanggal) {
                 card.classList.add('disabled');
             }
         });
-        
-        // Reset selected jam
         selectedJam = null;
         document.getElementById('jam_booking').value = '';
-        
     } catch (error) {
         console.error('Error:', error);
     }
@@ -801,7 +781,6 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
         return false;
     }
     
-    // Tampilkan loading
     Swal.fire({
         title: 'Memproses Booking...',
         text: 'Mohon tunggu sebentar',
@@ -812,12 +791,10 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
     });
 });
 
-// Fungsi untuk menampilkan keluhan di modal
 function showKeluhan(keluhan) {
     document.getElementById('keluhanText').innerHTML = keluhan;
 }
 
-// Inisialisasi tooltip dan popover
 document.addEventListener('DOMContentLoaded', function() {
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -832,7 +809,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })
 });
 
-// Notifikasi dari session
 <?php if(isset($_SESSION['success'])): ?>
 Swal.fire({
     icon: 'success',
@@ -840,8 +816,7 @@ Swal.fire({
     text: '<?php echo $_SESSION['success']; ?>',
     timer: 3000,
     showConfirmButton: true,
-    confirmButtonColor: '#667eea',
-    background: '#fff'
+    confirmButtonColor: '#667eea'
 });
 <?php unset($_SESSION['success']); ?>
 <?php endif; ?>

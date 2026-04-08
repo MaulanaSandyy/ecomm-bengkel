@@ -37,36 +37,30 @@ function escape_string($string) {
     return mysqli_real_escape_string($conn, $string);
 }
 
-// PERBAIKAN: Fungsi untuk upload gambar
+// Fungsi untuk upload gambar
 function upload_gambar($file, $folder) {
-    // Buat direktori jika belum ada
     $target_dir = "../uploads/" . $folder . "/";
     if (!file_exists($target_dir)) {
         mkdir($target_dir, 0777, true);
     }
     
-    // Cek apakah ada file yang diupload
     if (!isset($file) || $file['error'] == 4 || $file['size'] == 0) {
         return false;
     }
     
-    // Generate nama file unik
     $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     $new_filename = time() . '_' . uniqid() . '.' . $file_extension;
     $target_file = $target_dir . $new_filename;
     
-    // Validasi file
     $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
     if (!in_array($file_extension, $allowed_types)) {
         return false;
     }
     
-    // Validasi ukuran (max 5MB)
     if ($file['size'] > 5000000) {
         return false;
     }
     
-    // Upload file
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
         return $new_filename;
     }
@@ -74,18 +68,42 @@ function upload_gambar($file, $folder) {
     return false;
 }
 
-// Cek login
+// PERBAIKAN: Fungsi cek login
 function cek_login() {
     if (!isset($_SESSION['user_id'])) {
+        $_SESSION['error'] = "Silakan login terlebih dahulu!";
         header("Location: ../auth/login.php");
         exit();
     }
 }
 
-// Cek role
+// PERBAIKAN: Fungsi cek role
 function cek_role($role_id) {
+    if (!isset($_SESSION['role_id'])) {
+        $_SESSION['error'] = "Sesi tidak valid!";
+        header("Location: ../auth/login.php");
+        exit();
+    }
+    
     if ($_SESSION['role_id'] != $role_id) {
-        header("Location: ../index.php");
+        $_SESSION['error'] = "Akses ditolak! Anda tidak memiliki izin untuk mengakses halaman ini.";
+        // Redirect berdasarkan role yang sebenarnya
+        switch($_SESSION['role_id']) {
+            case 1:
+                header("Location: ../admin/index.php");
+                break;
+            case 2:
+                header("Location: ../owner/index.php");
+                break;
+            case 3:
+                header("Location: ../pegawai/index.php");
+                break;
+            case 4:
+                header("Location: ../customer/index.php");
+                break;
+            default:
+                header("Location: ../index.php");
+        }
         exit();
     }
 }
