@@ -55,29 +55,6 @@ $bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, u.alamat, j.nama_jasa, j
 .status-selesai { background: #d1fae5; color: #059669; }
 .status-batal { background: #fee2e2; color: #dc2626; }
 
-.sidebar {
-    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-    min-height: 100vh;
-    padding: 20px;
-    color: white;
-    border-radius: 15px;
-}
-
-.sidebar a {
-    color: #e5e7eb;
-    text-decoration: none;
-    padding: 12px 20px;
-    display: block;
-    border-radius: 10px;
-    margin: 5px 0;
-    transition: all 0.3s ease;
-}
-
-.sidebar a:hover, .sidebar a.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    transform: translateX(5px);
-}
 </style>
 
 <div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
