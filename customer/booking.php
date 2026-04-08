@@ -56,11 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['booking'])) {
     }
 }
 
-// Ambil data jasa untuk dropdown
+// Ambil data jasa untuk dropdown dengan gambar
 $jasa_list = query("SELECT * FROM jasa ORDER BY nama_jasa ASC");
 
 // Ambil booking customer dengan join ke service
-$bookings = query("SELECT b.*, j.nama_jasa, j.harga, j.estimasi_waktu,
+$bookings = query("SELECT b.*, j.nama_jasa, j.harga, j.estimasi_waktu, j.gambar as jasa_gambar,
                    s.status as service_status, s.catatan_service, s.pegawai_id,
                    p.nama_lengkap as pegawai_name
                    FROM booking b 
@@ -113,6 +113,102 @@ include '../includes/header.php';
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 25px;
     color: white;
+}
+
+/* Style untuk pilihan jasa dengan gambar */
+.jasa-card {
+    border: 2px solid #e5e7eb;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.jasa-card:hover {
+    border-color: #667eea;
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.15);
+}
+
+.jasa-card.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8edff 100%);
+}
+
+.jasa-card .jasa-image {
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #f3f4f6;
+}
+
+.jasa-card .jasa-info {
+    flex: 1;
+}
+
+.jasa-card .jasa-name {
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 5px;
+}
+
+.jasa-card .jasa-price {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.jasa-card .jasa-estimasi {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.jasa-card .radio-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.jasa-card.selected .radio-icon {
+    border-color: #667eea;
+    background: #667eea;
+}
+
+.jasa-card.selected .radio-icon i {
+    color: white;
+    font-size: 12px;
+}
+
+/* Jasa Grid untuk tampilan yang lebih baik */
+.jasa-grid {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.jasa-grid::-webkit-scrollbar {
+    width: 5px;
+}
+
+.jasa-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.jasa-grid::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 5px;
 }
 
 .jam-card {
@@ -195,9 +291,24 @@ include '../includes/header.php';
     gap: 10px;
 }
 
+/* Gambar jasa di riwayat */
+.jasa-thumbnail {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
 @media (max-width: 768px) {
     .jam-list {
         grid-template-columns: repeat(3, 1fr);
+    }
+    .jasa-card {
+        padding: 10px;
+    }
+    .jasa-card .jasa-image {
+        width: 50px;
+        height: 50px;
     }
 }
 
@@ -215,11 +326,11 @@ include '../includes/header.php';
                 <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
                     <i class="fas fa-user-circle me-2"></i>Menu Pelanggan
                 </h5>
-                <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
-                <a href="beli.php"><i class="fas fa-shopping-bag"></i>Beli Sparepart</a>
-                <a href="booking.php"  class="active"><i class="fas fa-calendar-check"></i>Booking Service</a>
-                <a href="checkout.php"><i class="fas fa-shopping-cart"></i>Keranjang / Checkout</a>
-                <a href="riwayat.php"><i class="fas fa-receipt"></i>Riwayat Transaksi</a>
+                <a href="index.php"><i class="fas fa-home me-2"></i>Dashboard</a>
+                <a href="beli.php"><i class="fas fa-shopping-bag me-2"></i>Beli Sparepart</a>
+                <a href="booking.php" class="active"><i class="fas fa-calendar-check me-2"></i>Booking Service</a>
+                <a href="checkout.php"><i class="fas fa-shopping-cart me-2"></i>Keranjang / Checkout</a>
+                <a href="riwayat.php"><i class="fas fa-receipt me-2"></i>Riwayat Transaksi</a>
             </div>
         </div>
         
@@ -244,16 +355,49 @@ include '../includes/header.php';
                                     <label class="form-label fw-semibold">
                                         <i class="fas fa-wrench text-primary me-1"></i> Pilih Jasa Service
                                     </label>
-                                    <select name="jasa_id" class="form-control" id="jasaSelect">
-                                        <option value="">-- Konsultasi / Tidak Pilih Jasa --</option>
+                                    <input type="hidden" name="jasa_id" id="selectedJasaId" value="">
+                                    <div class="jasa-grid" id="jasaGrid">
+                                        <!-- Option Konsultasi -->
+                                        <div class="jasa-card" data-jasa-id="" onclick="selectJasa(this, '')">
+                                            <div class="jasa-image bg-light d-flex align-items-center justify-content-center">
+                                                <i class="fas fa-comments fa-2x text-muted"></i>
+                                            </div>
+                                            <div class="jasa-info">
+                                                <div class="jasa-name">Konsultasi / Tidak Pilih Jasa</div>
+                                                <div class="jasa-price">Gratis Konsultasi</div>
+                                                <div class="jasa-estimasi">Konsultasi dengan mekanik ahli</div>
+                                            </div>
+                                            <div class="radio-icon">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </div>
+                                        
                                         <?php while($jasa = fetch_assoc($jasa_list)): ?>
-                                        <option value="<?php echo $jasa['id']; ?>" 
-                                                data-harga="<?php echo $jasa['harga']; ?>"
-                                                data-estimasi="<?php echo $jasa['estimasi_waktu']; ?>">
-                                            <?php echo $jasa['nama_jasa']; ?> - Rp <?php echo number_format($jasa['harga'], 0, ',', '.'); ?> (<?php echo $jasa['estimasi_waktu']; ?>)
-                                        </option>
+                                        <div class="jasa-card" data-jasa-id="<?php echo $jasa['id']; ?>" 
+                                             data-jasa-harga="<?php echo $jasa['harga']; ?>"
+                                             data-jasa-estimasi="<?php echo $jasa['estimasi_waktu']; ?>"
+                                             onclick="selectJasa(this, '<?php echo $jasa['id']; ?>')">
+                                            <div class="jasa-image">
+                                                <?php if ($jasa['gambar'] && file_exists("../uploads/jasa/" . $jasa['gambar'])): ?>
+                                                    <img src="../uploads/jasa/<?php echo $jasa['gambar']; ?>" 
+                                                         class="w-100 h-100 rounded-3" style="object-fit: cover;">
+                                                <?php else: ?>
+                                                    <div class="bg-light d-flex align-items-center justify-content-center w-100 h-100 rounded-3">
+                                                        <i class="fas fa-wrench fa-2x text-muted"></i>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="jasa-info">
+                                                <div class="jasa-name"><?php echo $jasa['nama_jasa']; ?></div>
+                                                <div class="jasa-price">Rp <?php echo number_format($jasa['harga'], 0, ',', '.'); ?></div>
+                                                <div class="jasa-estimasi"><i class="fas fa-clock me-1"></i><?php echo $jasa['estimasi_waktu']; ?></div>
+                                            </div>
+                                            <div class="radio-icon">
+                                                <i class="fas fa-check"></i>
+                                            </div>
+                                        </div>
                                         <?php endwhile; ?>
-                                    </select>
+                                    </div>
                                     <small class="text-muted">*Tidak wajib, Anda bisa langsung konsultasi dengan mekanik</small>
                                 </div>
                                 
@@ -349,7 +493,15 @@ include '../includes/header.php';
                                             <div class="col-md-5 mb-2 mb-md-0">
                                                 <div class="booking-detail-card">
                                                     <div class="d-flex align-items-center gap-2 mb-2">
-                                                        <i class="fas fa-wrench text-primary"></i>
+                                                        <?php if ($row['jasa_gambar'] && file_exists("../uploads/jasa/" . $row['jasa_gambar'])): ?>
+                                                            <img src="../uploads/jasa/<?php echo $row['jasa_gambar']; ?>" 
+                                                                 class="jasa-thumbnail" alt="<?php echo $row['nama_jasa']; ?>">
+                                                        <?php else: ?>
+                                                            <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" 
+                                                                 style="width: 40px; height: 40px;">
+                                                                <i class="fas fa-wrench text-muted"></i>
+                                                            </div>
+                                                        <?php endif; ?>
                                                         <strong class="small text-muted">Jasa Service</strong>
                                                     </div>
                                                     <p class="mb-1 fw-semibold">
@@ -526,6 +678,7 @@ include '../includes/header.php';
     </div>
 </div>
 
+<!-- Modal Keluhan -->
 <div class="modal fade" id="keluhanModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -546,6 +699,20 @@ include '../includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 let selectedJam = null;
+
+// Fungsi untuk memilih jasa
+function selectJasa(element, jasaId) {
+    // Hapus class selected dari semua jasa card
+    document.querySelectorAll('.jasa-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Tambah class selected ke card yang dipilih
+    element.classList.add('selected');
+    
+    // Set value hidden input
+    document.getElementById('selectedJasaId').value = jasaId;
+}
 
 // Pilih jam
 function pilihJam(element) {

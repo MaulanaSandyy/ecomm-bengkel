@@ -62,17 +62,18 @@ v riwayat.php (Customer)
 
 
 BUG == 
-
+# admin/sparepart.php = 
+    v 1. ingin mengedit gambar atau upload gambar produk gak bisa
 
 
 
 
 improve fungsi == 
 # customer/beli.php = 
-    x 1. setelah menambahkan checkout harus tambahkan fitur mau berapa banyak barangnya dimasukan ke keranjang, keranjang harus berwarna merah bubble dengan angka banyaknya barang yang dimasukkan ke keranjang
-    x 2. setelah ditambahkan ke checkout, setiap kali menambahkan jangan ke refresh halamannya
+    v 1. setelah menambahkan checkout harus tambahkan fitur mau berapa banyak barangnya dimasukan ke keranjang, keranjang harus berwarna merah bubble dengan angka banyaknya barang yang dimasukkan ke keranjang
+    v 2. setelah ditambahkan ke checkout, setiap kali menambahkan jangan ke refresh halamannya
 # customer/booking.php = 
-    x 1. tampilan pada pilih jasa servicenya harus ada gambar jasa booking servis nya
+    v 1. tampilan pada pilih jasa servicenya harus ada gambar jasa booking servis nya
     x 2. tambahkan lokasi tempat untuk melakukan servicenya dimana
 # customer/checkout.php =
     x 1. ketika ingin melakukan "proses checkout sekarang", munculkan beberapa tampilan payment seperti bayar transfer menggunakan (bca, mandiri, bank permata, bjb, cimb,
