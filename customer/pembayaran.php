@@ -117,9 +117,13 @@ include '../includes/header.php';
                     </div>
                     
                     <!-- Pilihan Pembayaran -->
-                    <h5 class="mb-3">Metode Pembayaran:</h5>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="bayarXendit()">
+                            <i class="fas fa-credit-card me-2"></i>Bayar Sekarang
+                        </button>
+                    </div>
                     
-                    <?php if ($data_qris): ?>
+                    <!-- <?php if ($data_qris): ?>
                     <div class="card mb-3 border-primary">
                         <div class="card-body">
                             <div class="row">
@@ -140,7 +144,7 @@ include '../includes/header.php';
                             </div>
                         </div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif; ?> -->
                 </div>
             </div>
         </div>
@@ -222,6 +226,11 @@ function konfirmasiPembayaran() {
         }
     });
 }
+
+function bayarXendit() {
+    window.location.href = 'xendit_create.php?transaksi_id=<?php echo $transaksi_id; ?>';
+}
+
 </script>
 
 <?php include '../includes/footer.php'; ?>
