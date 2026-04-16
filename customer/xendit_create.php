@@ -27,7 +27,7 @@ CURLOPT_POSTFIELDS => json_encode([
     "payer_email" => "customer@gmail.com",
     "description" => "Pembayaran Bengkel",
 
-    "success_redirect_url" => "http://localhost/ecomm-bengkel/customer/riwayat.php",
+    "success_redirect_url" => "http://localhost/ecomm-bengkel/customer/success.php?kode=$external_id",
 
     "metadata" => [
         "kode_transaksi" => $external_id
