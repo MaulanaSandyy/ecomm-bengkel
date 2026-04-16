@@ -80,7 +80,8 @@ improve fungsi ==
 # customer/checkout.php =
     x 1. ketika ingin melakukan "proses checkout sekarang", munculkan beberapa tampilan payment seperti bayar transfer menggunakan (bca, mandiri, bank permata, bjb, cimb,
         seabank) dengan nomer rekening dummy dan animasi transaksi panding -> berhasil
-    update :
+
+# customer/pembayaran.php =
     v mengganti sistem pembayaran manual memakai payment gateway Xendit
     
     
