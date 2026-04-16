@@ -4,7 +4,6 @@ include '../includes/koneksi.php';
 cek_login();
 cek_role(1); // Hanya admin
 
-// Handle Update Status
 if (isset($_GET['update_status'])) {
     $id = $_GET['update_status'];
     $status = $_GET['status'];
@@ -12,15 +11,11 @@ if (isset($_GET['update_status'])) {
     $query = "UPDATE booking SET status = '$status' WHERE id = $id";
     
     if (query($query)) {
-        // Jika status dikonfirmasi, buat entri di tabel service
-        if ($status == 'dikonfirmasi') {
-            $booking = fetch_assoc(query("SELECT * FROM booking WHERE id = $id"));
-            query("INSERT INTO service (booking_id, status) VALUES ($id, 'antri')");
-        }
         $_SESSION['success'] = "Status booking berhasil diupdate!";
     } else {
         $_SESSION['error'] = "Status booking gagal diupdate!";
     }
+
     header("Location: booking.php");
     exit();
 }
@@ -67,8 +62,19 @@ $bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, j.nama_jasa, j.harga,
 // Statistik Booking
 $total_booking = num_rows(query("SELECT * FROM booking"));
 $pending = num_rows(query("SELECT * FROM booking WHERE status = 'pending'"));
-$dikonfirmasi = num_rows(query("SELECT * FROM booking WHERE status = 'dikonfirmasi'"));
-$selesai = num_rows(query("SELECT * FROM booking WHERE status = 'selesai'"));
+// booking yg sudah dikonfirmasi tapi BELUM selesai
+$dikonfirmasi = num_rows(query("
+    SELECT b.id 
+    FROM booking b
+    LEFT JOIN service s ON b.id = s.booking_id
+    WHERE b.status = 'dikonfirmasi'
+    AND (s.status IS NULL OR s.status != 'selesai')
+"));
+
+// service yg sudah selesai
+$selesai = num_rows(query("
+    SELECT * FROM service WHERE status = 'selesai'
+"));
 $batal = num_rows(query("SELECT * FROM booking WHERE status = 'batal'"));
 
 $title = "Kelola Booking";

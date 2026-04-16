@@ -44,8 +44,8 @@ $services = query("SELECT s.*, b.tanggal_booking, u.nama_lengkap, j.nama_jasa
                     <i class="fas fa-user-cog me-2"></i>Menu Pegawai
                 </h5>
                 <a href="index.php" class="active"><i class="fas fa-home"></i>Dashboard</a>
-                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Booking</a>
-                <a href="service.php"><i class="fas fa-tools"></i>Service</a>
+                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
+                <a href="service.php"><i class="fas fa-tools"></i>Service Saya</a>
             </div>
         </div>
         

@@ -12,14 +12,22 @@ $user_id = $_SESSION['user_id'];
 // Proses update status service
 if(isset($_POST['update_status'])) {
     $id = $_POST['id'];
-    $status = $_POST['status'];
-    
-    $query = "UPDATE service SET status = '$status' WHERE id = $id";
-    if(query($query)) {
-        echo "<script>alert('Status service berhasil diupdate'); window.location.href='service.php';</script>";
+    $status = $_POST['update_status'];
+
+    if($status == 'selesai'){
+        $query = "UPDATE service 
+                  SET status = 'selesai', tanggal_selesai = NOW() 
+                  WHERE id = $id";
     } else {
-        echo "<script>alert('Gagal mengupdate status');</script>";
+        $query = "UPDATE service 
+                  SET status = '$status' 
+                  WHERE id = $id";
     }
+
+    query($query);
+
+    echo "<script>window.location='service.php';</script>";
+    exit();
 }
 
 // Proses tambah catatan
@@ -27,12 +35,11 @@ if(isset($_POST['save_catatan'])) {
     $id = $_POST['id'];
     $catatan = mysqli_real_escape_string($conn, $_POST['catatan']);
     
-    $query = "UPDATE service SET catatan = '$catatan' WHERE id = $id";
-    if(query($query)) {
-        echo "<script>alert('Catatan berhasil disimpan'); window.location.href='service.php';</script>";
-    } else {
-        echo "<script>alert('Gagal menyimpan catatan');</script>";
-    }
+    $query = "UPDATE service SET catatan_service = '$catatan' WHERE id = $id";
+    query($query);
+
+    echo "<script>window.location='service.php';</script>";
+    exit();
 }
 
 // Ambil data service untuk pegawai ini
@@ -67,8 +74,8 @@ if(isset($_GET['edit'])) {
                     <i class="fas fa-user-cog me-2"></i>Menu Pegawai
                 </h5>
                 <a href="index.php"><i class="fas fa-home"></i>Dashboard</a>
-                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Booking</a>
-                <a href="service.php" class="active"><i class="fas fa-tools"></i>Service</a>
+                <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
+                <a href="service.php" class="active"><i class="fas fa-tools"></i>Service Saya</a>
             </div>
         </div>
         
@@ -99,6 +106,7 @@ if(isset($_GET['edit'])) {
                                     <th>Status Service</th>
                                     <th>Catatan</th>
                                     <th class="text-end pe-4">Aksi</th>
+                                    <th>Tanggal Selesai</th>
                                 </tr>
                             </thead>
                             <tbody class="border-top-0">
@@ -131,18 +139,38 @@ if(isset($_GET['edit'])) {
                                         </span>
                                     </td>
                                     <td>
-                                        <?php if(!empty($row['catatan'])): ?>
-                                            <span class="text-muted small" data-bs-toggle="tooltip" title="<?php echo htmlspecialchars($row['catatan']); ?>">
-                                                <i class="fas fa-sticky-note text-warning"></i> Ada catatan
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-muted small">-</span>
-                                        <?php endif; ?>
+                                        <form method="POST">
+                                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+                                            <textarea name="catatan" class="form-control" rows="2"
+                                                placeholder="Isi catatan..."><?php echo htmlspecialchars($row['catatan_service'] ?? ''); ?></textarea>
+
+                                            <button type="submit" name="save_catatan" class="btn btn-sm btn-outline-primary mt-1">
+                                                Simpan
+                                            </button>
+                                        </form>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="?edit=<?php echo $row['id']; ?>" class="btn btn-sm btn-light text-primary rounded-circle shadow-sm" data-bs-toggle="modal" data-bs-target="#updateModal<?php echo $row['id']; ?>">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </a>
+                                        <form method="POST" style="display:inline;">
+                                            <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+
+                                            <?php if($row['status'] == 'antri'): ?>
+                                                <button type="submit" name="update_status" value="dikerjakan" class="btn btn-sm btn-primary">
+                                                    Mulai Kerjakan
+                                                </button>
+
+                                            <?php elseif($row['status'] == 'dikerjakan'): ?>
+                                                <button type="submit" name="update_status" value="selesai" class="btn btn-sm btn-success">
+                                                    Selesai Dikerjakan
+                                                </button>
+
+                                            <?php else: ?>
+                                                <span>-</span>
+                                            <?php endif; ?>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <?php echo $row['tanggal_selesai'] ? date('d M Y', strtotime($row['tanggal_selesai'])) : '-'; ?>
                                     </td>
                                 </tr>
                                 

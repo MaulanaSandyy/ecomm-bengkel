@@ -26,10 +26,10 @@ v transaksi.php
 x booking.php
 
 Bagian Pegawai = 
-x booking.php
-x index.php
-x service.php
-
+v booking.php
+v index.php
+v service.php
+note : customer Booking (pending) → Dikonfirmasi admin → Diambil Pegawai → Dikerjakan → Selesai
 
 Perubahan style website = 
 v style.css (assets/css)

@@ -10,28 +10,51 @@ include '../includes/header.php';
 $user_id = $_SESSION['user_id'];
 $user_name = $_SESSION['nama_lengkap'];
 
-// Proses update status booking
-if(isset($_POST['update_status'])) {
-    $id = $_POST['id'];
-    $status = $_POST['status'];
-    
-    $query = "UPDATE booking SET status = '$status' WHERE id = $id";
-    if(query($query)) {
-        $_SESSION['success'] = "Status booking berhasil diupdate!";
+
+if(isset($_POST['ambil_booking']) && !empty($_POST['booking_id'])) {
+
+    $booking_id = (int) $_POST['booking_id']; // 🔒 amankan
+    $pegawai_id = (int) $_SESSION['user_id'];
+
+    // cek apakah sudah diambil pegawai lain
+    $cek = query("SELECT COUNT(*) as total 
+                  FROM service 
+                  WHERE booking_id = $booking_id 
+                  AND pegawai_id IS NOT NULL");
+
+    $data = fetch_assoc($cek);
+
+    if($data['total'] == 0){
+
+        query("INSERT INTO service (booking_id, pegawai_id, status) 
+               VALUES ($booking_id, $pegawai_id, 'antri')");
+
+        $_SESSION['success'] = "Booking berhasil diambil!";
+
     } else {
-        $_SESSION['error'] = "Gagal mengupdate status!";
+        $_SESSION['error'] = "Booking sudah diambil!";
     }
-    header("Location: booking.php");
+
+    echo "<script>window.location='booking.php';</script>";
     exit();
 }
 
 // Ambil data booking
-$bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, u.alamat, j.nama_jasa, j.harga as harga_jasa
-                   FROM booking b 
-                   JOIN users u ON b.user_id = u.id 
-                   LEFT JOIN jasa j ON b.jasa_id = j.id 
-                   WHERE b.status IN ('pending','dikonfirmasi','selesai')
-                   ORDER BY b.created_at DESC");
+$bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, u.alamat, j.nama_jasa, j.harga as harga_jasa,
+       (
+         SELECT id 
+         FROM service 
+         WHERE booking_id = b.id 
+         AND pegawai_id IS NOT NULL 
+         LIMIT 1
+       ) as service_id
+FROM booking b 
+JOIN users u ON b.user_id = u.id 
+LEFT JOIN jasa j ON b.jasa_id = j.id 
+WHERE b.status = 'dikonfirmasi'
+ORDER BY b.created_at DESC");
+
+
 ?>
 
 <style>
@@ -131,17 +154,31 @@ $bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, u.alamat, j.nama_jasa, j
                                             <?php echo $row['status']; ?>
                                         </span>
                                     </td>
-                                    <td class="text-end pe-4">
+                                    <td>
+                                        <?php if($row['service_id'] == NULL): ?>
+                                            <form method="POST">
+                                                <input type="hidden" name="booking_id" value="<?php echo $row['id']; ?>">
+                                                <button type="submit" name="ambil_booking" class="btn btn-success btn-sm">
+                                                    Ambil
+                                                </button>
+                                            </form>
+                                        <?php else: ?>
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                Sudah Diambil
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                    <!-- <td class="text-end pe-4">
                                         <button class="btn btn-sm btn-primary rounded-pill" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#updateModal<?php echo $row['id']; ?>">
                                             <i class="fas fa-edit me-1"></i> Update Status
                                         </button>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 
                                 <!-- Modal Update Status -->
-                                <div class="modal fade" id="updateModal<?php echo $row['id']; ?>" tabindex="-1">
+                                <!-- <div class="modal fade" id="updateModal<?php echo $row['id']; ?>" tabindex="-1">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content rounded-4">
                                             <div class="modal-header border-0 pt-4 px-4">
@@ -180,7 +217,7 @@ $bookings = query("SELECT b.*, u.nama_lengkap, u.no_hp, u.alamat, j.nama_jasa, j
                                             </form>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                                 <?php endwhile; ?>
                                 
                                 <?php if(num_rows($bookings) == 0): ?>
