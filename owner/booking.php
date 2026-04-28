@@ -353,17 +353,17 @@ $top_jasa = query("SELECT j.nama_jasa,
 }
 </style>
 
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-3 col-lg-2 px-0">
-            <div class="sidebar">
-                <h4 class="text-white mb-4"><i class="fas fa-dashboard me-2"></i>Menu Owner</h4>
+<div class="container-fluid px-0 px-lg-4 mt-2" style="margin-top: -20px;">
+    <div class="row g-0 g-lg-4">
+
+        <div class="col-md-3 col-lg-2 d-none d-md-block" data-aos="fade-right">
+            <div class="sidebar rounded-4 shadow-sm" style="top: 100px;">
+                <h5 class="fw-bold px-3 mb-4 text-uppercase" style="color: var(--primary-color); font-size: 0.85rem; letter-spacing: 1px;">
+                    <i class="fas fa-user-tie me-2"></i>Menu Owner
+                </h5>
                 <a href="index.php"><i class="fas fa-home me-2"></i>Dashboard</a>
+                <a href="booking.php" class="active"><i class="fas fa-calendar-alt me-2"></i>Data Booking</a>
                 <a href="laporan.php"><i class="fas fa-chart-bar me-2"></i>Laporan Keuangan</a>
-                <a href="transaksi.php"><i class="fas fa-credit-card me-2"></i>Data Transaksi</a>
-                <a href="booking.php" class="active"><i class="fas fa-calendar-alt me-2"></i>Laporan Booking</a>
-                <a href="service.php"><i class="fas fa-wrench me-2"></i>Data Service</a>
-                <a href="profil.php"><i class="fas fa-building me-2"></i>Profil Bengkel</a>
             </div>
         </div>
         
