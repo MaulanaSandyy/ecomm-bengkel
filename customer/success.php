@@ -79,20 +79,30 @@ if (!$data) {
                 <div class="col-6">
                     <div class="bg-light rounded-3 p-3">
                         <small class="text-muted d-block mb-2">
-                            <i class="fas fa-tag me-1"></i> Status
+                            <i class="fas fa-tag me-1"></i> Status Pesanan
                         </small>
                         <?php
-                        $status_color = [
-                            'pending' => 'warning',
-                            'lunas' => 'success', 
-                            'batal' => 'danger'
-                        ];
-                        $warna = $status_color[$data['status']];
-                        ?>
+                            $status = $data['status'] ?? 'dikemas';
+
+                            $status_color = [
+                                'dikemas' => 'warning',
+                                'dikirim' => 'primary',
+                                'selesai' => 'success'
+                            ];
+
+                            $status_icon = [
+                                'dikemas' => 'fa-box',
+                                'dikirim' => 'fa-truck',
+                                'selesai' => 'fa-check-circle'
+                            ];
+
+                            $warna = $status_color[$status] ?? 'secondary';
+                            $icon = $status_icon[$status] ?? 'fa-question-circle';
+                            ?>
                         <span class="badge bg-<?php echo $warna; ?> bg-opacity-10 text-<?php echo $warna; ?> rounded-pill px-3 py-2">
-                            <i class="fas <?php echo $data['status'] == 'lunas' ? 'fa-check-circle' : ($data['status'] == 'pending' ? 'fa-clock' : 'fa-times-circle'); ?> me-1"></i>
-                            <?php echo ucfirst($data['status']); ?>
-                        </span>
+                        <i class="fas <?php echo $icon; ?> me-1"></i>
+                        <?php echo ucfirst($status); ?>
+                        </span> 
                     </div>
                 </div>
                 

@@ -14,6 +14,6 @@ $metode = $data['payment_channel'] ?? 'Xendit';
 // kalau sukses
 if ($status == 'PAID' || $status == 'SETTLED') {
     query("UPDATE transaksi 
-           SET status='lunas', metode_pembayaran='$metode' 
+           SET status='dikemas', metode_pembayaran='$metode' 
            WHERE kode_transaksi='$kode'");
 }

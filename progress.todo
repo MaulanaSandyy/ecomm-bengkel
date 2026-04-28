@@ -91,3 +91,11 @@ IDE ===
     x 1. menampilkan jumlah Pegawai yang tersedia atau tidak sibuk
     x 2. nanti pegawai yang gak sibuk atau kerjaannya bagian service keliling akan dapat menerima service-an bookingan itu, dan hanya pegawai itu yang bisa konfirmasi 
             selesai dll dan admin, pegawai lain gak bisa konfirmasi service atau ubah service ke selesai selain pegawai yang mengerjakan dan admin
+
+UPDATE FLOW TRANSAKSI ==
+    1. Customer checkout barang
+    2. Pembayaran via Xendit → pembayaran berhasil
+    3. Status pesanan → dikemas
+    4. Admin input resi → Status dikirim
+    5. Customer klik "Pesanan Diterima" → Status selesai
+   

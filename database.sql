@@ -128,6 +128,12 @@ CREATE TABLE transaksi (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+-- update tabel transaksi (tambahin kolom no_resi)
+ALTER TABLE transaksi 
+ADD no_resi VARCHAR(100) NULL;
+-- update tb transaksi
+ALTER TABLE transaksi 
+MODIFY status ENUM('dikemas','dikirim','selesai') NOT NULL;
 
 -- Tabel detail_transaksi
 CREATE TABLE detail_transaksi (

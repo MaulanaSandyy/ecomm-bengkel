@@ -20,6 +20,19 @@ if (isset($_GET['update_status'])) {
     exit();
 }
 
+
+if (isset($_POST['kirim'])) {
+    $id = $_POST['id'];
+    $resi = $_POST['no_resi'];
+
+    query("UPDATE transaksi 
+           SET status='dikirim', no_resi='$resi' 
+           WHERE id=$id");
+
+    header("Location: transaksi.php");
+    exit();
+}
+
 // Handle Delete
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
@@ -236,63 +249,91 @@ include '../includes/header.php';
                                             <span class="badge bg-light text-dark border d-inline-block w-auto mb-1 align-self-start fw-bold fs-6">
                                                 <i class="fas fa-file-invoice me-1"></i><?php echo $row['kode_transaksi']; ?>
                                             </span>
-                                            <span class="small text-muted"><i class="far fa-calendar-alt me-1"></i><?php echo date('d M Y, H:i', strtotime($row['created_at'])); ?></span>
+                                            <span class="small text-muted">
+                                                <i class="far fa-calendar-alt me-1"></i><?php echo date('d M Y, H:i', strtotime($row['created_at'])); ?>
+                                            </span>
                                         </div>
                                     </td>
+
                                     <td>
                                         <h6 class="mb-0 fw-bold text-dark"><?php echo $row['nama_lengkap']; ?></h6>
                                         <small class="text-muted"><i class="fas fa-phone-alt me-1"></i><?php echo $row['no_hp']; ?></small>
                                     </td>
+
                                     <td>
                                         <span class="d-block text-muted small mb-1"><?php echo $row['total_item']; ?> Item Servis/Part</span>
                                         <h6 class="mb-0 fw-bold text-success">Rp <?php echo number_format($row['total_harga'], 0, ',', '.'); ?></h6>
                                     </td>
+
                                     <td>
                                         <div class="d-flex flex-column gap-1 align-items-start">
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-2 py-1 text-uppercase small" style="font-size: 0.65rem;">
                                                 <i class="fas fa-wallet me-1"></i> <?php echo $row['metode_pembayaran'] ?: 'BELUM DIPILIH'; ?>
                                             </span>
+                                            
                                             <?php
-                                            $badge = ['pending' => 'warning', 'lunas' => 'success', 'batal' => 'danger'];
+                                                $status = $row['status'] ?? 'dikemas';
+                                                $badge_colors = [
+                                                    'dikemas' => 'warning',
+                                                    'dikirim' => 'primary',
+                                                    'selesai' => 'success'
+                                                ];
+                                                $warna = $badge_colors[$status] ?? 'secondary';
                                             ?>
-                                            <span class="badge bg-<?php echo $badge[$row['status']]; ?> bg-opacity-10 text-<?php echo $badge[$row['status']]; ?> border border-<?php echo $badge[$row['status']]; ?> border-opacity-25 rounded-pill px-2 py-1 text-uppercase small" style="font-size: 0.65rem;">
-                                                <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> <?php echo $row['status']; ?>
+                                            
+                                            <span class="badge bg-<?php echo $warna; ?> bg-opacity-10 text-<?php echo $warna; ?> border border-<?php echo $warna; ?> border-opacity-25 rounded-pill px-2 py-1 text-uppercase small" style="font-size: 0.65rem;">
+                                                <i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> <?php echo $status; ?>
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="text-end pe-4 d-print-none">
-                                        <div class="d-flex justify-content-end gap-2">
+
+                                    <td class="text-end pe-4 d-print-none" style="min-width: 220px;">
+                                        <div class="d-flex justify-content-end gap-2 mb-2">
                                             <button type="button" class="btn btn-sm btn-light text-primary rounded-circle shadow-sm border" 
-                                                    onclick="lihatDetail(<?php echo $row['id']; ?>)" data-bs-toggle="tooltip" title="Lihat Detail Nota">
+                                                    onclick="lihatDetail(<?php echo $row['id']; ?>)">
                                                 <i class="fas fa-eye"></i>
                                             </button>
-                                            
+
                                             <div class="dropdown">
                                                 <button class="btn btn-sm btn-light border rounded-circle shadow-sm text-dark px-2" type="button" data-bs-toggle="dropdown">
                                                     <i class="fas fa-ellipsis-v"></i>
                                                 </button>
+
                                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                                                    <li><h6 class="dropdown-header">Update Pembayaran</h6></li>
-                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=pending"><i class="fas fa-clock text-warning me-2 w-20px"></i>Set Pending</a></li>
-                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=lunas"><i class="fas fa-check-circle text-success me-2 w-20px"></i>Pelunasan</a></li>
-                                                    <li><a class="dropdown-item" href="?update_status=<?php echo $row['id']; ?>&status=batal"><i class="fas fa-times-circle text-danger me-2 w-20px"></i>Set Batal</a></li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    <li><a class="dropdown-item text-danger" href="#" onclick="return confirmDelete('?delete=<?php echo $row['id']; ?>', 'Hapus permanen invoice ini beserta detailnya?')"><i class="fas fa-trash me-2 w-20px"></i>Hapus Data</a></li>
+                                                    <?php if($row['status'] == 'dikemas'): ?>
+                                                    <li>
+                                                        <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalResi<?php echo $row['id']; ?>">
+                                                            <i class="fas fa-truck me-2 text-primary"></i>Input Resi
+                                                        </a>
+                                                    </li>
+                                                    <?php endif; ?>
+
+                                                    <li>
+                                                        <a class="dropdown-item text-danger" href="#" 
+                                                        onclick="return confirmDelete('?delete=<?php echo $row['id']; ?>', 'Hapus data?')">
+                                                            <i class="fas fa-trash me-2"></i>Hapus Data
+                                                        </a>
+                                                    </li>
                                                 </ul>
                                             </div>
                                         </div>
-                                    </td>
+                                    </td>   
                                 </tr>
                                 <?php endwhile; ?>
                                 
                                 <?php if(num_rows($transaksi) == 0): ?>
-                                    <tr><td colspan="5" class="text-center py-5 text-muted">Data transaksi kosong atau tidak sesuai kriteria filter.</td></tr>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">Data transaksi kosong atau tidak sesuai kriteria filter.</td>
+                                    </tr>
                                 <?php endif; ?>
                             </tbody>
+                            
                             <tfoot class="bg-light d-none d-print-table-row">
                                 <tr>
                                     <td colspan="2" class="text-end fw-bold pt-3 pb-3">TOTAL LUNAS DARI TABEL INI:</td>
-                                    <td colspan="3" class="fw-bold text-success fs-5 pt-3 pb-3">Rp <?php echo number_format($total_table_pendapatan, 0, ',', '.'); ?></td>
+                                    <td colspan="3" class="fw-bold text-success fs-5 pt-3 pb-3">
+                                        Rp <?php echo number_format($total_table_pendapatan, 0, ',', '.'); ?>
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -383,5 +424,43 @@ function exportToExcel(tableId, filename) {
     a.click();
 }
 </script>
+
+<?php 
+mysqli_data_seek($transaksi, 0); 
+while($m = fetch_assoc($transaksi)): 
+    if($m['status'] == 'dikemas'):
+?>
+<div class="modal fade" id="modalResi<?php echo $m['id']; ?>" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Input Resi Pengiriman</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="id" value="<?php echo $m['id']; ?>">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted text-uppercase">Nomor Resi</label>
+                        <input type="text" name="no_resi" placeholder="Masukkan nomor resi..." required class="form-control form-control-lg border-2">
+                    </div>
+                    <div class="alert alert-info py-2 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> Status akan otomatis berubah menjadi <strong>DIKIRIM</strong>.
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" name="kirim" class="btn btn-primary px-4 rounded-pill">
+                        <i class="fas fa-save me-1"></i> Simpan & Kirim
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<?php 
+    endif;
+endwhile; 
+?>
 
 <?php include '../includes/footer.php'; ?>

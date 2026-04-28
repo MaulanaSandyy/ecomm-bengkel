@@ -87,14 +87,30 @@ ORDER BY created_at DESC
                                         
                                         <td class="text-center pe-4">
                                             <?php
-                                            $status_color = ['pending' => 'warning', 'lunas' => 'success', 'batal' => 'danger'];
-                                            $status_icon = ['pending' => 'fa-clock', 'lunas' => 'fa-check-circle', 'batal' => 'fa-times-circle'];
+                                            $status_color = [
+                                                'dikemas' => 'warning',
+                                                'dikirim' => 'primary',
+                                                'selesai' => 'success'
+                                            ];
+
+                                            $status_icon = [
+                                                'dikemas' => 'fa-box',
+                                                'dikirim' => 'fa-truck',
+                                                'selesai' => 'fa-check-circle'
+                                            ];
                                             $warna = $status_color[$row['status']];
                                             $icon = $status_icon[$row['status']];
                                             ?>
                                             <span class="badge bg-<?php echo $warna; ?> bg-opacity-10 text-<?php echo $warna; ?> rounded-pill px-3 py-2 text-uppercase small w-100">
                                                 <i class="fas <?php echo $icon; ?> me-1"></i> <?php echo $row['status']; ?>
                                             </span>
+                                            <?php if($row['status'] == 'dikirim'): ?>
+                                                <a href="terima.php?id=<?php echo $row['id']; ?>" 
+                                                onclick="return confirm('Konfirmasi pesanan sudah diterima?')"
+                                                class="btn btn-success btn-sm mt-2">
+                                                Pesanan Diterima
+                                                </a>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                     <?php endwhile; ?>
