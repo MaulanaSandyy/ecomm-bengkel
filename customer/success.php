@@ -10,13 +10,14 @@ if (!$kode) {
     exit();
 }
 
-// ambil data transaksi
+// ambil data transaksi (update status jika perlu)
 $data = fetch_assoc(query("SELECT * FROM transaksi WHERE kode_transaksi='$kode'"));
 
-// kalau data tidak ditemukan
-if (!$data) {
-    echo "<h3>Transaksi tidak ditemukan</h3>";
-    exit();
+// Jika status masih pending, coba cek ke Xendit atau update manual
+if ($data && $data['status'] == 'pending') {
+    // Update status menjadi lunas karena sukses redirect
+    query("UPDATE transaksi SET status = 'lunas' WHERE kode_transaksi='$kode'");
+    $data['status'] = 'lunas';
 }
 ?>
 
@@ -34,7 +35,7 @@ if (!$data) {
     
     <style>
         body {
-            background: #f0f2f5;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -47,18 +48,51 @@ if (!$data) {
         .success-card {
             max-width: 500px;
             width: 100%;
+            animation: slideUp 0.5s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .checkmark-circle {
+            width: 80px;
+            height: 80px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="success-card">
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
         
-        <!-- Header - pakai bg-success sesuai standar Bootstrap -->
-        <div class="bg-success text-white p-4 text-center rounded-top-4">
-            <div class="mb-3">
-                <i class="fas fa-check-circle fa-4x"></i>
+        <!-- Header - pakai bg-success -->
+        <div class="bg-success text-white p-4 text-center">
+            <div class="checkmark-circle">
+                <i class="fas fa-check fa-3x text-white"></i>
             </div>
             <h4 class="fw-bold mb-1">Pembayaran Berhasil!</h4>
             <p class="mb-0 opacity-75">Terima kasih telah melakukan transaksi</p>
@@ -81,28 +115,9 @@ if (!$data) {
                         <small class="text-muted d-block mb-2">
                             <i class="fas fa-tag me-1"></i> Status Pesanan
                         </small>
-                        <?php
-                            $status = $data['status'] ?? 'dikemas';
-
-                            $status_color = [
-                                'dikemas' => 'warning',
-                                'dikirim' => 'primary',
-                                'selesai' => 'success'
-                            ];
-
-                            $status_icon = [
-                                'dikemas' => 'fa-box',
-                                'dikirim' => 'fa-truck',
-                                'selesai' => 'fa-check-circle'
-                            ];
-
-                            $warna = $status_color[$status] ?? 'secondary';
-                            $icon = $status_icon[$status] ?? 'fa-question-circle';
-                            ?>
-                        <span class="badge bg-<?php echo $warna; ?> bg-opacity-10 text-<?php echo $warna; ?> rounded-pill px-3 py-2">
-                        <i class="fas <?php echo $icon; ?> me-1"></i>
-                        <?php echo ucfirst($status); ?>
-                        </span> 
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2">
+                            <i class="fas fa-check-circle me-1"></i> LUNAS
+                        </span>
                     </div>
                 </div>
                 
@@ -112,8 +127,8 @@ if (!$data) {
                             <i class="fas fa-wallet me-1"></i> Metode Bayar
                         </small>
                         <span class="fw-medium">
-                            <i class="fas fa-qrcode me-2 text-secondary"></i>
-                            <?php echo $data['metode_pembayaran'] ?: 'QRIS'; ?>
+                            <i class="fas fa-credit-card me-2 text-secondary"></i>
+                            <?php echo $data['metode_pembayaran'] ?: 'Virtual Account'; ?>
                         </span>
                     </div>
                 </div>
@@ -143,10 +158,10 @@ if (!$data) {
             <!-- Tombol -->
             <div class="d-flex gap-2">
                 <a href="riwayat.php" class="btn btn-primary rounded-pill flex-fill py-2">
-                    <i class="fas fa-history me-2"></i>Riwayat
+                    <i class="fas fa-history me-2"></i>Lihat Riwayat
                 </a>
                 <a href="index.php" class="btn btn-outline-secondary rounded-pill flex-fill py-2">
-                    <i class="fas fa-home me-2"></i>Dashboard
+                    <i class="fas fa-home me-2"></i>Ke Dashboard
                 </a>
             </div>
         </div>

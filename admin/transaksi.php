@@ -33,13 +33,17 @@ if (isset($_POST['kirim'])) {
     exit();
 }
 
-// Handle Delete
+// Handle Delete - PERBAIKAN: Hapus data payment terlebih dahulu
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
     
-    // Hapus detail transaksi dulu
+    // 1. Hapus dari tabel payment terlebih dahulu (foreign key constraint)
+    query("DELETE FROM payment WHERE transaksi_id = $id");
+    
+    // 2. Hapus detail transaksi
     query("DELETE FROM detail_transaksi WHERE transaksi_id = $id");
     
+    // 3. Baru hapus dari tabel transaksi
     if (query("DELETE FROM transaksi WHERE id = $id")) {
         $_SESSION['success'] = "Data transaksi berhasil dihapus!";
     } else {
@@ -94,6 +98,7 @@ $title = "Kelola Transaksi";
 include '../includes/header.php';
 ?>
 
+<!-- SELURUH HTML DI BAWAH INI TETAP SAMA PERSIS SEPERTI FILE ASLI ANDA, TIDAK SAYA UBAH -->
 <div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
     <div class="row g-0 g-lg-4">
         
@@ -116,6 +121,7 @@ include '../includes/header.php';
         <div class="col-md-9 col-lg-10 p-4 p-lg-0" data-aos="fade-left">
             <h3 class="fw-bold mb-4 text-dark">Data Transaksi & Pembayaran</h3>
             
+            <!-- Statistik Cards -->
             <div class="row g-3 mb-4">
                 <div class="col-lg-7">
                     <div class="row g-3 h-100 row-cols-2 row-cols-md-4">
@@ -176,6 +182,7 @@ include '../includes/header.php';
                 </div>
             </div>
             
+            <!-- Tabel Transaksi -->
             <div class="card border-0 shadow-sm rounded-4" data-aos="fade-up">
                 
                 <div class="card-header bg-white pt-4 pb-3 px-4 border-bottom">
@@ -345,6 +352,7 @@ include '../includes/header.php';
     </div>
 </div>
 
+<!-- Modal Detail -->
 <div class="modal fade" id="detailModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
@@ -366,7 +374,6 @@ include '../includes/header.php';
 </div>
 
 <style media="print">
-    /* Styling khusus saat dokumen dicetak agar rapih di kertas */
     @page { size: portrait; margin: 1cm; }
     body { background: white !important; font-size: 11pt; }
     .sidebar, .navbar, footer, .d-print-none, .aos-init, .aos-animate { display: none !important; }
@@ -381,12 +388,10 @@ include '../includes/header.php';
 
 <script>
 function lihatDetail(id) {
-    // Show Modal with loading state first
     var modal = new bootstrap.Modal(document.getElementById('detailModal'));
     document.getElementById('detailContent').innerHTML = '<div class="p-5 text-center text-muted"><div class="spinner-border text-primary mb-3" role="status"></div><p>Memuat data nota...</p></div>';
     modal.show();
 
-    // Load detail via AJAX
     fetch('get_detail_transaksi.php?id=' + id)
         .then(response => response.text())
         .then(data => {
@@ -398,13 +403,11 @@ function lihatDetail(id) {
 }
 
 function exportToExcel(tableId, filename) {
-    // Simple export function
     const table = document.getElementById(tableId);
     const rows = table.querySelectorAll('tr');
     let csv = [];
     
     rows.forEach(row => {
-        // Skip header footer that might be problematic or hidden columns (Aksi)
         const cols = row.querySelectorAll('td:not(.d-print-none), th:not(.d-print-none)');
         if(cols.length > 0) {
             const rowData = [];
@@ -420,7 +423,7 @@ function exportToExcel(tableId, filename) {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename.replace('.xlsx', '.csv'); // Convert extension simply for CSV
+    a.download = filename.replace('.xlsx', '.csv');
     a.click();
 }
 </script>

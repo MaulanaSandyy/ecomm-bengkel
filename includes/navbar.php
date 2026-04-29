@@ -21,11 +21,15 @@ if (session_status() == PHP_SESSION_NONE) {
                 <li class="nav-item">
                     <a class="nav-link px-3 fw-medium text-secondary" href="/ecomm-bengkel/index.php"><i class="fas fa-home me-1 text-primary"></i>Beranda</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link px-3 fw-medium text-secondary" href="/ecomm-bengkel/index.php#jasa"><i class="fas fa-wrench me-1 text-primary"></i>Jasa</a>
+               <li class="nav-item">
+                    <a class="nav-link px-3 fw-medium text-secondary" href="#jasa">
+                        <i class="fas fa-wrench me-1 text-primary"></i>Jasa
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link px-3 fw-medium text-secondary" href="/ecomm-bengkel/index.php#sparepart"><i class="fas fa-box-open me-1 text-primary"></i>Sparepart</a>
+                    <a class="nav-link px-3 fw-medium text-secondary" href="#sparepart">
+                        <i class="fas fa-box-open me-1 text-primary"></i>Sparepart
+                    </a>
                 </li>
                 
                 <li class="nav-item d-none d-lg-block mx-2">

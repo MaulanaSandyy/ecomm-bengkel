@@ -65,7 +65,7 @@ ORDER BY t.created_at DESC
 
                                 <?php if(num_rows($transaksi) > 0): ?>
                                     <?php while($row = fetch_assoc($transaksi)): 
-                                        // Mapping status yang benar untuk transaksi
+                                        // Mapping status yang benar untuk transaksi (pending, lunas, batal)
                                         $status_color = [
                                             'pending' => 'warning',
                                             'lunas' => 'success',
@@ -105,7 +105,7 @@ ORDER BY t.created_at DESC
                                         
                                         <td>
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill px-3 py-1 fw-normal">
-                                                <i class="fas fa-wallet me-1"></i> <?php echo $row['metode_pembayaran'] ?: 'QRIS'; ?>
+                                                <i class="fas fa-wallet me-1"></i> <?php echo $row['metode_pembayaran'] ?: 'Belum dipilih'; ?>
                                             </span>
                                         </td>
                                         
@@ -131,18 +131,18 @@ ORDER BY t.created_at DESC
                                             <?php if($row['status'] == 'pending'): ?>
                                                 <a href="pembayaran.php?transaksi_id=<?php echo $row['id']; ?>" 
                                                    class="btn btn-sm btn-primary rounded-pill">
-                                                    <i class="fas fa-credit-card me-1"></i> Bayar
+                                                    <i class="fas fa-credit-card me-1"></i> Bayar Sekarang
                                                 </a>
                                             <?php elseif($row['status'] == 'lunas'): ?>
                                                 <span class="badge bg-success">
-                                                    <i class="fas fa-check-circle me-1"></i> Terbayar
+                                                    <i class="fas fa-check-circle me-1"></i> Pembayaran Sukses
                                                 </span>
                                             <?php elseif($row['status'] == 'batal'): ?>
                                                 <span class="badge bg-danger">
                                                     <i class="fas fa-times-circle me-1"></i> Dibatalkan
                                                 </span>
                                             <?php endif; ?>
-                                        </td>
+                                        <tr>
                                     </tr>
                                     <?php endwhile; ?>
 

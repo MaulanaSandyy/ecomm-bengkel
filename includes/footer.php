@@ -174,6 +174,212 @@ function confirmDelete(url, message = 'Data akan dihapus permanen!') {
     });
     <?php unset($_SESSION['error']); ?>
 <?php endif; ?>
+
+// ============================================
+// SMOOTH SCROLL ANIMATION FOR JASA & SPAREPART
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Create scroll progress bar
+    const progressBar = document.createElement('div');
+    progressBar.className = 'scroll-progress';
+    document.body.appendChild(progressBar);
+    
+    // Update progress bar on scroll
+    window.addEventListener('scroll', () => {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        progressBar.style.width = scrolled + '%';
+    });
+    
+    // Create scroll to top button
+    const scrollTopBtn = document.createElement('div');
+    scrollTopBtn.className = 'scroll-top-btn';
+    scrollTopBtn.innerHTML = '<i class="fas fa-arrow-up"></i>';
+    document.body.appendChild(scrollTopBtn);
+    
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add('show');
+        } else {
+            scrollTopBtn.classList.remove('show');
+        }
+    });
+    
+    // Smooth scroll untuk semua anchor link
+    const allLinks = document.querySelectorAll('a[href^="#"]');
+    
+    allLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            
+            // Skip jika href hanya "#" atau kosong
+            if (!targetId || targetId === '#') return;
+            
+            // Skip jika target adalah dropdown toggle
+            if (this.id === 'navbarDropdown') return;
+            
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                e.preventDefault();
+                
+                // Animasi loading pada tombol yang diklik
+                const originalText = this.innerHTML;
+                const icon = this.querySelector('i');
+                
+                if (icon && !this.classList.contains('btn')) {
+                    icon.style.animation = 'none';
+                    icon.offsetHeight; // trigger reflow
+                    icon.style.animation = 'bounce 0.5s ease';
+                }
+                
+                // Tambah efek ripple pada tombol
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+                
+                // Scroll ke target dengan offset navbar
+                const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 80;
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - navbarHeight;
+                
+                // Highlight target section
+                targetElement.classList.add('section-highlight');
+                setTimeout(() => {
+                    targetElement.classList.remove('section-highlight');
+                }, 800);
+                
+                // Smooth scroll
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Update URL hash tanpa memicu scroll
+                history.pushState(null, null, targetId);
+                
+                // Update active class pada navbar
+                updateActiveNavLink(targetId);
+            }
+        });
+    });
+    
+    // Update active nav link berdasarkan scroll position
+    function updateActiveNavLink(hash) {
+        const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+        navLinks.forEach(link => {
+            const linkHash = link.getAttribute('href');
+            if (linkHash === hash) {
+                link.classList.add('active-section');
+            } else {
+                link.classList.remove('active-section');
+            }
+        });
+    }
+    
+    // Highlight nav link berdasarkan scroll position
+    const sections = document.querySelectorAll('section[id], div[id]');
+    
+    function highlightNavigation() {
+        const scrollPosition = window.scrollY + 100;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            const sectionId = section.getAttribute('id');
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom && sectionId) {
+                const correspondingLink = document.querySelector(`.navbar-nav .nav-link[href="#${sectionId}"]`);
+                if (correspondingLink) {
+                    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+                        link.classList.remove('active-section');
+                    });
+                    correspondingLink.classList.add('active-section');
+                }
+            }
+        });
+    }
+    
+    window.addEventListener('scroll', highlightNavigation);
+    window.addEventListener('load', highlightNavigation);
+    
+    // Close mobile navbar after clicking link
+    const navbarCollapse = document.querySelector('.navbar-collapse');
+    const navbarToggler = document.querySelector('.navbar-toggler');
+    
+    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+        link.addEventListener('click', () => {
+            if (window.innerWidth <= 991.98 && navbarCollapse && navbarCollapse.classList.contains('show')) {
+                setTimeout(() => {
+                    if (navbarToggler) {
+                        navbarToggler.click();
+                    }
+                }, 100);
+            }
+        });
+    });
+    
+    // Add hover animation for buttons
+    const buttons = document.querySelectorAll('.btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    // Parallax effect for hero section (optional)
+    const heroSection = document.querySelector('.hero-section');
+    if (heroSection) {
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            heroSection.style.backgroundPositionY = scrolled * 0.5 + 'px';
+        });
+    }
+    
+    // Add loading animation saat halaman dimuat
+    window.addEventListener('load', () => {
+        document.body.classList.add('loaded');
+    });
+    
+    // Intersection Observer untuk animasi fade-in saat scroll (opsional)
+    const fadeElements = document.querySelectorAll('.service-card, .sparepart-card, .stat-item');
+    
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    fadeElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        observer.observe(el);
+    });
+});
 </script>
 
 </body>
