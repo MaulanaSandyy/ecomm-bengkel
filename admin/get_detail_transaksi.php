@@ -131,7 +131,7 @@ $payment = fetch_assoc(query("SELECT * FROM payment WHERE transaksi_id = $id ORD
                     <div>
                         <span class="d-block small fw-bold">PEMBAYARAN TERVERIFIKASI</span>
                         <span style="font-size: 0.7rem;">Via <?php echo $payment['metode']; ?> pada <?php echo date('d/m/y', strtotime($payment['tanggal_payment'])); ?></span>
-                    </div>
+
                 </div>
             <?php endif; ?>
             <p class="small text-muted fst-italic mb-0 mt-auto">*Terima kasih telah mempercayakan kendaraan Anda pada kami.</p>
@@ -141,11 +141,11 @@ $payment = fetch_assoc(query("SELECT * FROM payment WHERE transaksi_id = $id ORD
             <table class="table table-borderless table-sm mb-0">
                 <tr>
                     <td class="text-end text-muted fw-bold">Subtotal:</td>
-                    <td class="text-end w-30">Rp <?php echo number_format($total, 0, ',', '.'); ?></td>
+                    <td class="text-end" style="width: 30%;">Rp <?php echo number_format($total, 0, ',', '.'); ?></td>
                 </tr>
                 <tr>
                     <td class="text-end text-muted fw-bold border-bottom pb-2">Biaya Tambahan:</td>
-                    <td class="text-end w-30 border-bottom pb-2">Rp 0</td>
+                    <td class="text-end border-bottom pb-2" style="width: 30%;">Rp 0</td>
                 </tr>
                 <tr>
                     <td class="text-end fw-bold text-dark pt-3 fs-5">TOTAL KESELURUHAN:</td>
@@ -156,27 +156,4 @@ $payment = fetch_assoc(query("SELECT * FROM payment WHERE transaksi_id = $id ORD
     </div>
 </div>
 
-<div class="text-end mt-4 pt-3 border-top d-print-none px-4 pb-4">
-    <button onclick="printInvoice()" class="btn btn-primary rounded-pill px-4 shadow-sm">
-        <i class="fas fa-print me-2"></i>Cetak Invoice
-    </button>
 </div>
-
-<script>
-// Fungsi print spesifik hanya pada area modal/invoice
-function printInvoice() {
-    var printContents = document.getElementById('invoice-printable-area').innerHTML;
-    var originalContents = document.body.innerHTML;
-
-    // Bersihkan layar, masukkan content invoice saja
-    document.body.innerHTML = printContents;
-    
-    // Panggil dialog print browser
-    window.print();
-
-    // Kembalikan layar ke semula setelah selesai/batal print
-    document.body.innerHTML = originalContents;
-    // Reload lokasi untuk mengembalikan fungsi JS/Event listener yang hilang krn DOM rewrite
-    window.location.reload(); 
-}
-</script>

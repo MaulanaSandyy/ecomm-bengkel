@@ -193,8 +193,6 @@ include '../includes/header.php';
                 <a href="sparepart.php" class="active"><i class="fas fa-box-open me-2"></i>Kelola Sparepart</a>
                 <a href="booking.php"><i class="fas fa-calendar-alt me-2"></i>Kelola Booking</a>
                 <a href="transaksi.php"><i class="fas fa-cash-register me-2"></i>Kelola Transaksi</a>
-                <a href="profil.php"><i class="fas fa-building me-2"></i>Profil Bengkel</a>
-                <a href="qris.php"><i class="fas fa-qrcode me-2"></i>Upload QRIS</a>
             </div>
         </div>
         

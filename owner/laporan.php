@@ -87,16 +87,16 @@ $rekap_metode = query("SELECT metode_pembayaran,
             </div>
         </div>
         
-        <div class="col-md-9 col-lg-10 p-4 p-lg-0" data-aos="fade-left">
+<div class="col-md-9 col-lg-10 p-4 p-lg-0" data-aos="fade-left">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
                 <h3 class="fw-bold text-dark mb-0">Laporan Keuangan</h3>
                 <div class="d-flex gap-2 mt-3 mt-md-0 d-print-none">
                     <button type="button" class="btn btn-outline-dark rounded-pill px-3 shadow-sm" onclick="printLaporan()">
                         <i class="fas fa-print me-2"></i>Cetak PDF
                     </button>
-                    <a href="laporan.php?export=excel&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>" class="btn btn-success rounded-pill px-3 shadow-sm">
+                    <button type="button" class="btn btn-success rounded-pill px-3 shadow-sm" onclick="exportExcel()">
                         <i class="fas fa-file-excel me-2"></i>Export Excel
-                    </a>
+                    </button>
                 </div>
             </div>
             
@@ -405,7 +405,21 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function printLaporan() {
-    window.print();
+    var params = new URLSearchParams(window.location.search);
+    var url = 'print_laporan.php';
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    window.open(url, '_blank');
+}
+
+function exportExcel() {
+    var params = new URLSearchParams(window.location.search);
+    var url = 'export_laporan_excel.php';
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    window.location.href = url;
 }
 </script>
 

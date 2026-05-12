@@ -113,8 +113,6 @@ include '../includes/header.php';
                 <a href="sparepart.php"><i class="fas fa-box-open"></i>Kelola Sparepart</a>
                 <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
                 <a href="transaksi.php" class="active"><i class="fas fa-cash-register"></i>Kelola Transaksi</a>
-                <a href="profil.php"><i class="fas fa-building"></i>Profil Bengkel</a>
-                <a href="qris.php"><i class="fas fa-qrcode"></i>Upload QRIS</a>
             </div>
         </div>
         
@@ -368,6 +366,9 @@ include '../includes/header.php';
             </div>
             <div class="modal-footer border-0 bg-white">
                 <button type="button" class="btn btn-light border rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary rounded-pill px-4" onclick="printDetail()">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
             </div>
         </div>
     </div>
@@ -400,6 +401,33 @@ function lihatDetail(id) {
         .catch(err => {
             document.getElementById('detailContent').innerHTML = '<div class="p-5 text-center text-danger"><i class="fas fa-exclamation-triangle fa-3x mb-3"></i><p>Gagal memuat data. Silakan coba lagi.</p></div>';
         });
+}
+
+function printDetail() {
+    var printContents = document.getElementById('invoice-printable-area');
+    if (!printContents) {
+        alert('Area invoice tidak ditemukan.');
+        return;
+    }
+    
+    var printWindow = window.open('', '_blank');
+    printWindow.document.write(`<!DOCTYPE html><html><head>
+        <title>Cetak Invoice</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            body { background: white; color: black; padding: 15mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .letter-spacing-1 { letter-spacing: 1px; }
+            .w-15px { width: 15px; }
+            @page { size: A4; margin: 0; }
+        </style>
+    </head><body>${printContents.innerHTML}</body></html>`);
+    printWindow.document.close();
+    setTimeout(function() {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+    }, 500);
 }
 
 function exportToExcel(tableId, filename) {

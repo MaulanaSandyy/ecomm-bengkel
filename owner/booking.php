@@ -118,9 +118,11 @@ if (isset($_GET['filter_status']) && !empty($_GET['filter_status'])) {
     $where .= " AND b.status = '$status'";
 }
 
+// Service status filter - only applied to main query
+$service_filter = "";
 if (isset($_GET['filter_service_status']) && !empty($_GET['filter_service_status'])) {
     $service_status = escape_string($_GET['filter_service_status']);
-    $where .= " AND s.status = '$service_status'";
+    $service_filter = " AND s.status = '$service_status'";
 }
 
 if (isset($_GET['start_date']) && !empty($_GET['start_date'])) {
@@ -158,7 +160,7 @@ $bookings = query("SELECT b.*,
                    LEFT JOIN jasa j ON b.jasa_id = j.id 
                    LEFT JOIN service s ON b.id = s.booking_id
                    LEFT JOIN users p ON s.pegawai_id = p.id
-                   $where
+                   $where $service_filter
                    ORDER BY 
                        CASE b.status 
                            WHEN 'pending' THEN 1
@@ -172,7 +174,7 @@ $bookings = query("SELECT b.*,
 // Ambil daftar pegawai untuk assign
 $pegawai_list = query("SELECT id, nama_lengkap FROM users WHERE role_id = 3 ORDER BY nama_lengkap");
 
-// Statistik Booking
+// Statistik Booking (tanpa service table)
 $total_booking = num_rows(query("SELECT * FROM booking b JOIN users u ON b.user_id = u.id $where"));
 
 $total_pending = num_rows(query("SELECT * FROM booking b JOIN users u ON b.user_id = u.id $where AND b.status = 'pending'"));
@@ -184,13 +186,27 @@ $total_selesai = num_rows(query("SELECT * FROM booking b JOIN users u ON b.user_
 $total_batal = num_rows(query("SELECT * FROM booking b JOIN users u ON b.user_id = u.id $where AND b.status = 'batal'"));
 
 // Statistik Service
-$total_service = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $where"));
+$service_where = "WHERE 1=1";
+if (isset($_GET['filter_status']) && !empty($_GET['filter_status'])) {
+    $service_where .= " AND b.status = '" . escape_string($_GET['filter_status']) . "'";
+}
+if (isset($_GET['start_date']) && !empty($_GET['start_date'])) {
+    $service_where .= " AND DATE(b.tanggal_booking) >= '" . escape_string($_GET['start_date']) . "'";
+}
+if (isset($_GET['end_date']) && !empty($_GET['end_date'])) {
+    $service_where .= " AND DATE(b.tanggal_booking) <= '" . escape_string($_GET['end_date']) . "'";
+}
+if (isset($_GET['filter_service_status']) && !empty($_GET['filter_service_status'])) {
+    $service_where .= " AND s.status = '" . escape_string($_GET['filter_service_status']) . "'";
+}
 
-$service_antri = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $where AND s.status = 'antri'"));
+$total_service = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $service_where"));
 
-$service_dikerjakan = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $where AND s.status = 'dikerjakan'"));
+$service_antri = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $service_where AND s.status = 'antri'"));
 
-$service_selesai = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $where AND s.status = 'selesai'"));
+$service_dikerjakan = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $service_where AND s.status = 'dikerjakan'"));
+
+$service_selesai = num_rows(query("SELECT * FROM service s JOIN booking b ON s.booking_id = b.id JOIN users u ON b.user_id = u.id $service_where AND s.status = 'selesai'"));
 
 // Statistik Per Hari (untuk chart)
 $booking_per_hari = query("SELECT DATE(tanggal_booking) as tanggal, 
@@ -256,18 +272,20 @@ $top_jasa = query("SELECT j.nama_jasa,
 
 .stat-card {
     border-radius: 15px;
-    padding: 20px;
     color: white;
     transition: all 0.3s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px);
 }
 
-.stat-icon {
-    font-size: 2.5rem;
-    opacity: 0.8;
+.stat-card .card-body {
+    padding: 1rem;
+}
+
+.stat-card .opacity-50 {
+    opacity: 0.5;
 }
 
 .filter-card {
@@ -367,84 +385,96 @@ $top_jasa = query("SELECT j.nama_jasa,
             </div>
         </div>
         
-        <div class="col-md-9 col-lg-10 p-4">
+        <div class="col-md-9 col-lg-10 p-4 p-lg-0">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0"><i class="fas fa-calendar-alt me-2 text-primary"></i>Kelola Booking & Service</h2>
                 <div>
                     <button class="btn btn-success me-2" onclick="exportToExcel()">
                         <i class="fas fa-file-excel me-2"></i>Export Excel
                     </button>
-                    <button class="btn btn-secondary" onclick="window.print()">
+                    <button class="btn btn-secondary" onclick="printBookingReport()">
                         <i class="fas fa-print me-2"></i>Print
                     </button>
                 </div>
             </div>
             
-            <div class="row mb-4">
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up">
-                    <div class="stat-card bg-primary">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Total Booking</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($total_booking); ?></h3>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-primary">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Total Booking</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($total_booking); ?></h3>
+                                </div>
+                                <i class="fas fa-calendar-check fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-calendar-check stat-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up" data-aos-delay="50">
-                    <div class="stat-card bg-warning">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Pending</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($total_pending); ?></h3>
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up" data-aos-delay="50">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-warning">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Pending</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($total_pending); ?></h3>
+                                </div>
+                                <i class="fas fa-clock fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-clock stat-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up" data-aos-delay="100">
-                    <div class="stat-card bg-info">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Dikonfirmasi</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($total_dikonfirmasi); ?></h3>
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-info">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Dikonfirmasi</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($total_dikonfirmasi); ?></h3>
+                                </div>
+                                <i class="fas fa-check-circle fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-check-circle stat-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up" data-aos-delay="150">
-                    <div class="stat-card bg-success">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Selesai</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($total_selesai); ?></h3>
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up" data-aos-delay="150">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-success">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Selesai</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($total_selesai); ?></h3>
+                                </div>
+                                <i class="fas fa-check-double fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-check-double stat-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up" data-aos-delay="200">
-                    <div class="stat-card bg-danger">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Batal</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($total_batal); ?></h3>
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-danger">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Batal</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($total_batal); ?></h3>
+                                </div>
+                                <i class="fas fa-times-circle fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-times-circle stat-icon"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-md-4 mb-3" data-aos="fade-up" data-aos-delay="250">
-                    <div class="stat-card bg-secondary">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <small class="text-white-50">Service Aktif</small>
-                                <h3 class="text-white mb-0"><?php echo number_format($service_antri + $service_dikerjakan); ?></h3>
-                                <small class="text-white-50">Antri: <?php echo $service_antri; ?> | Dikerjakan: <?php echo $service_dikerjakan; ?></small>
+                <div class="col-md-6 col-xl-2 mb-3" data-aos="fade-up" data-aos-delay="250">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 stat-card bg-secondary">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <small class="text-white-50 small">Service Aktif</small>
+                                    <h3 class="text-white mb-0 fw-bold"><?php echo number_format($service_antri + $service_dikerjakan); ?></h3>
+                                    <small class="text-white-50 small">Antri: <?php echo $service_antri; ?> | Kerja: <?php echo $service_dikerjakan; ?></small>
+                                </div>
+                                <i class="fas fa-wrench fa-2x opacity-50"></i>
                             </div>
-                            <i class="fas fa-wrench stat-icon"></i>
                         </div>
                     </div>
                 </div>
@@ -814,6 +844,56 @@ function lihatDetail(id) {
         });
 }
 
+// Print Detail Booking - open new window with data from database
+function printDetail() {
+    var detailContent = document.getElementById('detailContent');
+    var printWindow = window.open('', '_blank');
+    
+    printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Detail Booking</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                * { font-size: 12px; }
+                body { padding: 20px; background: white; }
+                .header-report { border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+                .detail-section { background: #f9fafb; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+                .detail-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-bottom: 10px; font-weight: 600; }
+                .status-badge { padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+                .status-pending { background: #fef3c7; color: #d97706; }
+                .status-dikonfirmasi { background: #dbeafe; color: #2563eb; }
+                .status-selesai { background: #d1fae5; color: #059669; }
+                .status-batal { background: #fee2e2; color: #dc2626; }
+                .service-status-antri { background: #fed7aa; color: #c2410c; }
+                .service-status-dikerjakan { background: #c7d2fe; color: #4338ca; }
+                .service-status-selesai { background: #d1fae5; color: #059669; }
+                .footer-report { border-top: 1px solid #ccc; margin-top: 30px; padding-top: 15px; text-align: center; font-size: 0.85rem; color: #666; }
+                .btn-print { display: block; margin: 30px auto; padding: 10px 30px; font-size: 14px; }
+                @page { size: A4; margin: 10mm; }
+            </style>
+        </head>
+        <body>
+            ${detailContent.innerHTML}
+            <div class="container-fluid" style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-primary btn-print" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print
+                </button>
+                <button class="btn btn-secondary btn-print" onclick="window.close()">
+                    <i class="fas fa-times me-2"></i>Tutup
+                </button>
+            </div>
+        </body>
+        </html>
+    `);
+    printWindow.document.close();
+    setTimeout(function() {
+        printWindow.focus();
+    }, 500);
+}
+
 // Lihat Keluhan
 function lihatKeluhan(keluhan) {
     document.getElementById('keluhanText').innerHTML = keluhan;
@@ -823,72 +903,22 @@ function lihatKeluhan(keluhan) {
 
 // Export to Excel
 function exportToExcel() {
-    const table = document.getElementById('bookingTable');
-    const rows = table.querySelectorAll('tr');
-    let csv = [];
-    
-    rows.forEach(row => {
-        const cols = row.querySelectorAll('td, th');
-        const rowData = [];
-        cols.forEach((col, index) => {
-            // Skip kolom aksi (kolom terakhir)
-            if (index < cols.length - 1) {
-                let text = col.innerText.replace(/"/g, '""');
-                rowData.push('"' + text + '"');
-            }
-        });
-        if (rowData.length > 0) {
-            csv.push(rowData.join(','));
-        }
-    });
-    
-    const csvContent = csv.join('\n');
-    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `laporan_booking_<?php echo date('Y-m-d'); ?>.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: 'Data berhasil diekspor ke Excel',
-        timer: 2000,
-        showConfirmButton: false
-    });
+    var params = new URLSearchParams(window.location.search);
+    var url = 'export_booking_excel.php';
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    window.location.href = url;
 }
 
-// Print Detail
-function printDetail() {
-    const printContent = document.getElementById('detailContent').innerHTML;
-    const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <html>
-        <head>
-            <title>Detail Booking</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-            <style>
-                body { padding: 20px; }
-                @media print {
-                    .no-print { display: none; }
-                    body { margin: 0; padding: 15px; }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="print-area">
-                ${printContent}
-            </div>
-            <div class="text-center no-print mt-4">
-                <button class="btn btn-primary" onclick="window.print()">Print</button>
-                <button class="btn btn-secondary" onclick="window.close()">Tutup</button>
-            </div>
-        </body>
-        </html>
-    `);
-    printWindow.document.close();
+// Print Booking Report
+function printBookingReport() {
+    var params = new URLSearchParams(window.location.search);
+    var url = 'print_booking_report.php';
+    if (params.toString()) {
+        url += '?' + params.toString();
+    }
+    window.open(url, '_blank');
 }
 
 // Tooltip initialization

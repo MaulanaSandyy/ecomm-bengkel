@@ -1,10 +1,7 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "bengkel_mobil";
+include __DIR__ . '/env.php';
 
-$conn = mysqli_connect($host, $user, $pass, $db);
+$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if (!$conn) {
     die("Koneksi gagal: " . mysqli_connect_error());

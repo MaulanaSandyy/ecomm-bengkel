@@ -118,9 +118,9 @@ $total_booking = num_rows(query("SELECT * FROM booking"));
                             <div class="rounded-circle d-flex align-items-center justify-content-center mb-4 transition-all" style="width: 80px; height: 80px; background: rgba(79, 70, 229, 0.1);">
                                 <i class="fas fa-cash-register fa-2x" style="color: var(--primary-color);"></i>
                             </div>
-                            <h5 class="fw-bold text-dark mb-2">Kelola Transaksi</h5>
-                            <p class="text-muted small mb-4">Pantau dan verifikasi pembayaran dari pelanggan bengkel.</p>
-                            <a href="transaksi.php" class="btn btn-primary px-4 rounded-pill shadow-sm w-75">Lihat Data <i class="fas fa-arrow-right ms-2"></i></a>
+                            <h5 class="fw-bold text-dark mb-2">Data Booking</h5>
+                            <p class="text-muted small mb-4">Pantau dan verifikasi booking dari pelanggan bengkel.</p>
+                            <a href="booking.php" class="btn btn-primary px-4 rounded-pill shadow-sm w-75">Lihat Data <i class="fas fa-arrow-right ms-2"></i></a>
                         </div>
                     </div>
                 </div>

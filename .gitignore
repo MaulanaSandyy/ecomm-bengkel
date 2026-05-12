@@ -1,0 +1,30 @@
+# Environment variables (contains sensitive data)
+.env
+
+# Dependencies
+/node_modules
+/vendor
+
+# Uploads
+/uploads
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Cache
+/cache
+/tmp/
+temp/
+
+# Composer
+composer.phar

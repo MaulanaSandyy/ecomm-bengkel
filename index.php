@@ -141,37 +141,6 @@ html {
     box-shadow: 0 0 10px rgba(102,126,234,0.5);
 }
 
-/* Scroll to top button */
-.scroll-top-btn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 5px 15px rgba(102,126,234,0.3);
-}
-
-.scroll-top-btn.show {
-    opacity: 1;
-    visibility: visible;
-}
-
-.scroll-top-btn:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(102,126,234,0.4);
-}
-
 /* ============================================
    HERO SECTION WITH MODERN CARD DESIGN
    ============================================ */

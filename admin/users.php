@@ -95,8 +95,6 @@ include '../includes/header.php';
                 <a href="sparepart.php"><i class="fas fa-box-open"></i>Kelola Sparepart</a>
                 <a href="booking.php"><i class="fas fa-calendar-alt"></i>Kelola Booking</a>
                 <a href="transaksi.php"><i class="fas fa-cash-register"></i>Kelola Transaksi</a>
-                <a href="profil.php"><i class="fas fa-building"></i>Profil Bengkel</a>
-                <a href="qris.php"><i class="fas fa-qrcode"></i>Upload QRIS</a>
             </div>
         </div>
         

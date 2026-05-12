@@ -22,7 +22,7 @@ $user_email = $user['email'] ?? 'customer@gmail.com';
 $user_name = $user['nama_lengkap'] ?? 'Customer';
 
 // API Key Xendit (Development)
-$apiKey = "xnd_development_Z19zovxgowMpF0FR6cO5mdrOY0RWmtTpbgeRWH5Dnpr9sB9TSHPQ2yE58JZ2BRm";
+$apiKey = XENDIT_API_KEY;
 
 // Mapping metode pembayaran ke Xendit
 $payment_methods = [
