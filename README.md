@@ -40,7 +40,7 @@
 |-------|-----------|
 | 📅 **Booking Service Online** | Customer bisa booking service via website |
 | ⚙️ **Manajemen Antrian** | Status booking: Pending → Dikonfirmasi → Dikerjakan → Selesai |
-| 👨‍🔧 **分配 Mekanik** | Owner bisa assign mekanik ke setiap job |
+| 👨‍🔧 **Mekanik** | Owner bisa assign mekanik ke setiap job |
 | 📝 **Catatan Service** | Tracking detail pekerjaan dan biaya tambahan |
 
 ### 📊 Dashboard & Laporan
