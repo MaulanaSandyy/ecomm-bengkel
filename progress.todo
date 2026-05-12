@@ -22,8 +22,12 @@ ADD = ajax_add_to_cart.php
 Bagian owner =
 v index.php
 v laporan.php
-v transaksi.php
-x booking.php
+v booking.php
+ADD = print_booking_report.php
+ADD = export_booking_excel.php
+ADD = print_laporan.php
+ADD = export_laporan_excel.php
+ADD = get_detail_booking.php
 
 Bagian Pegawai = 
 v booking.php
@@ -39,8 +43,8 @@ v header.php (includes)
 v navbar.php (includes)
 v footer.php (includes)
 v index.php (owner)
-v laporam.php (owner)
-v transaksi.php (owner)
+v laporan.php (owner)
+v booking.php (owner)
 v login.php (auth)
 v registers.php (auth)
 v index.php (admin)
@@ -49,9 +53,9 @@ v transaksi.php (admin)
 v profil.php (admin)
 v qris.php (admin)
 v get_detail_transaksi.php (admin)
-x jasa.php (admin)
-x sparepart.php (admin)
-x booking.php (admin)
+v jasa.php (admin)
+v sparepart.php (admin)
+v booking.php (admin)
 v beli.php (Customer)
 v booking.php (Customer)
 v checkout.php (Customer)
@@ -60,11 +64,50 @@ v pembayaran.php (Customer)
 v riwayat.php (Customer)
 
 
+Perbaikan Fitur Print & Export ==
+# owner/booking.php
+    v 1. Tambah tombol Export Excel untuk export data booking ke Excel dengan format rapih
+    v 2. Tambah tombol Print untuk cetak laporan booking dari database
+    v 3. Fix tampilan statistik card agar lebih responsif dan rapih
+    v 4. Fix error Unknown column 's.status' pada filter service status
+    v 5. Tambah tombol Print pada modal detail booking
+
+# owner/get_detail_booking.php
+    v 1. Perbaiki tampilan detail booking dengan data dari database
+    v 2. Tambah kop nota bengkel dari profil_bengkel
+
+# owner/laporan.php
+    v 1. Tambah tombol Export Excel untuk laporan keuangan
+    v 2. Perbaiki tombol Print untuk cetak laporan dari database
+    v 3. Tambah filter tanggal periode laporan
+
+# admin/get_detail_transaksi.php
+    v 1. Perbaiki fungsi print invoice dengan popup window baru
+    v 2. Hapus button print di dalam file (pindah ke modal footer)
+    v 3. Bersihkan script dan CSS yang tidak diperlukan
+
+# admin/transaksi.php
+    v 1. Tambah tombol Print pada modal detail transaksi
+    v 2. Update fungsi print dengan popup window baru
+    v 3. Hapus button print di dalam get_detail_transaksi.php
+
+# customer/riwayat.php
+    v 1. Sudah menggunakan fungsi printDetail() yang sama patternnya dengan admin
+
+
+Keamanan & Konfigurasi ==
+v Tambah file .env untuk menyimpan data sensitif (API keys, database credentials)
+v Tambah file includes/env.php sebagai loader environment variables
+v Update koneksi database menggunakan konstanta dari env.php
+v Update Xendit integration (callback/xendit.php & customer/xendit_create.php) menggunakan konfigurasi terpusat
+v Tambah file .gitignore untuk mencegah file sensitif di-push ke GitHub
+v Tambah file .env.example sebagai template untuk developer lain
+v Hapus tombol scroll-top dari footer.php dan index.php
+
 
 BUG == 
 # admin/sparepart.php = 
     v 1. ingin mengedit gambar atau upload gambar produk gak bisa
-
 
 
 
@@ -76,7 +119,6 @@ improve fungsi ==
 # customer/booking.php = 
     v 1. tampilan pada pilih jasa servicenya harus ada gambar jasa booking servis nya
     x 2. tambahkan lokasi tempat untuk melakukan servicenya dimana
-    x 
 # customer/checkout.php =
     x 1. ketika ingin melakukan "proses checkout sekarang", munculkan beberapa tampilan payment seperti bayar transfer menggunakan (bca, mandiri, bank permata, bjb, cimb,
         seabank) dengan nomer rekening dummy dan animasi transaksi panding -> berhasil
@@ -84,7 +126,9 @@ improve fungsi ==
 # customer/pembayaran.php =
     v mengganti sistem pembayaran manual memakai payment gateway Xendit
     
-    
+# owner/booking.php
+    v Fix error Unknown column 's.status' pada statistik service
+
 
 IDE === 
 # customer/booking.php = 
@@ -98,4 +142,3 @@ UPDATE FLOW TRANSAKSI ==
     3. Status pesanan → dikemas
     4. Admin input resi → Status dikirim
     5. Customer klik "Pesanan Diterima" → Status selesai
-   
