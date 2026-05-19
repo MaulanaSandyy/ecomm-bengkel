@@ -37,17 +37,35 @@ $pendapatan_sparepart = fetch_assoc(query("SELECT SUM(d.harga * d.jumlah) as tot
                                           AND DATE(t.created_at) BETWEEN '$start_date' AND '$end_date'
                                           AND t.status = 'lunas'"))['total'];
 
+// Pagination Transaksi per hari
+$limit_hari = isset($_GET['per_page_hari']) ? (int)$_GET['per_page_hari'] : 10;
+$page_hari = isset($_GET['page_hari']) ? (int)$_GET['page_hari'] : 1;
+$start_hari = ($page_hari - 1) * $limit_hari;
+
+$total_hari = num_rows(query("SELECT DATE(created_at) as tanggal FROM transaksi WHERE DATE(created_at) BETWEEN '$start_date' AND '$end_date' GROUP BY DATE(created_at)"));
+$total_pages_hari = ceil($total_hari / $limit_hari);
+
 // Transaksi per hari
-$transaksi_per_hari = query("SELECT DATE(created_at) as tanggal, 
+$query_transaksi_hari = "SELECT DATE(created_at) as tanggal, 
                              COUNT(*) as jumlah_transaksi,
                              SUM(CASE WHEN status = 'lunas' THEN total_harga ELSE 0 END) as pendapatan
                              FROM transaksi 
                              WHERE DATE(created_at) BETWEEN '$start_date' AND '$end_date'
                              GROUP BY DATE(created_at)
-                             ORDER BY tanggal DESC");
+                             ORDER BY tanggal DESC
+                             LIMIT $start_hari, $limit_hari";
+$transaksi_per_hari = query($query_transaksi_hari);
 
-// Top 10 Produk Terlaris periode ini
-$top_produk = query("SELECT 
+// Pagination Top Produk
+$limit_produk = isset($_GET['per_page_produk']) ? (int)$_GET['per_page_produk'] : 10;
+$page_produk = isset($_GET['page_produk']) ? (int)$_GET['page_produk'] : 1;
+$start_produk = ($page_produk - 1) * $limit_produk;
+
+$total_produk = num_rows(query("SELECT d.item_type, d.item_id FROM detail_transaksi d JOIN transaksi t ON d.transaksi_id = t.id WHERE DATE(t.created_at) BETWEEN '$start_date' AND '$end_date' AND t.status = 'lunas' GROUP BY d.item_type, d.item_id"));
+$total_pages_produk = ceil($total_produk / $limit_produk);
+
+// Top Produk Terlaris periode ini
+$query_top_produk = "SELECT 
                      CASE 
                         WHEN d.item_type = 'jasa' THEN (SELECT nama_jasa FROM jasa WHERE id = d.item_id)
                         ELSE (SELECT nama_sparepart FROM sparepart WHERE id = d.item_id)
@@ -61,16 +79,18 @@ $top_produk = query("SELECT
                      AND t.status = 'lunas'
                      GROUP BY d.item_type, d.item_id
                      ORDER BY total_terjual DESC
-                     LIMIT 10");
+                     LIMIT $start_produk, $limit_produk";
+$top_produk = query($query_top_produk);
 
 // Rekap per metode pembayaran
-$rekap_metode = query("SELECT metode_pembayaran, 
+$query_rekap_metode = "SELECT metode_pembayaran, 
                        COUNT(*) as jumlah,
                        SUM(total_harga) as total
                        FROM transaksi 
                        WHERE DATE(created_at) BETWEEN '$start_date' AND '$end_date'
                        AND status = 'lunas'
-                       GROUP BY metode_pembayaran");
+                       GROUP BY metode_pembayaran";
+$rekap_metode = query($query_rekap_metode);
 ?>
 
 <div class="container-fluid px-0 px-lg-4 mt-3" style="margin-top: -20px;">
@@ -195,8 +215,9 @@ $rekap_metode = query("SELECT metode_pembayaran,
                                     </thead>
                                     <tbody class="border-top-0">
                                         <?php 
-                                        if(num_rows($top_produk) > 0):
-                                            while($row = fetch_assoc($top_produk)): 
+                                        $top_produk_data = query($query_top_produk);
+                                        if(num_rows($top_produk_data) > 0):
+                                            while($row = fetch_assoc($top_produk_data)): 
                                         ?>
                                         <tr>
                                             <td class="ps-4 fw-medium text-dark"><?php echo $row['nama_produk']; ?></td>
@@ -216,6 +237,35 @@ $rekap_metode = query("SELECT metode_pembayaran,
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-white py-3 px-4 border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Tampilkan:</span>
+                                    <select class="form-select form-select-sm rounded-pill" style="width: 70px;" onchange="window.location.href='laporan.php?per_page_produk='+this.value+'&page_produk=1&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>'">
+                                        <option value="5" <?php echo $limit_produk == 5 ? 'selected' : ''; ?>>5</option>
+                                        <option value="10" <?php echo $limit_produk == 10 ? 'selected' : ''; ?>>10</option>
+                                        <option value="15" <?php echo $limit_produk == 15 ? 'selected' : ''; ?>>15</option>
+                                        <option value="20" <?php echo $limit_produk == 20 ? 'selected' : ''; ?>>20</option>
+                                        <option value="50" <?php echo $limit_produk == 50 ? 'selected' : ''; ?>>50</option>
+                                    </select>
+                                </div>
+                                <?php if($total_pages_produk > 1): ?>
+                                <nav>
+                                    <ul class="pagination pagination-sm mb-0">
+                                        <?php if($page_produk > 1): ?>
+                                        <li class="page-item"><a class="page-link rounded-pill me-1" href="laporan.php?page_produk=<?php echo $page_produk-1; ?>&per_page_produk=<?php echo $limit_produk; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><i class="fas fa-chevron-left"></i></a></li>
+                                        <?php endif; ?>
+                                        <?php for($i = max(1, $page_produk-2); $i <= min($total_pages_produk, $page_produk+2); $i++): ?>
+                                        <li class="page-item <?php echo $i == $page_produk ? 'active' : ''; ?>"><a class="page-link rounded-pill me-1" href="laporan.php?page_produk=<?php echo $i; ?>&per_page_produk=<?php echo $limit_produk; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><?php echo $i; ?></a></li>
+                                        <?php endfor; ?>
+                                        <?php if($page_produk < $total_pages_produk): ?>
+                                        <li class="page-item"><a class="page-link rounded-pill" href="laporan.php?page_produk=<?php echo $page_produk+1; ?>&per_page_produk=<?php echo $limit_produk; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><i class="fas fa-chevron-right"></i></a></li>
+                                        <?php endif; ?>
+                                    </ul>
+                                </nav>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -238,8 +288,9 @@ $rekap_metode = query("SELECT metode_pembayaran,
                                     </thead>
                                     <tbody class="border-top-0">
                                         <?php 
-                                        if(num_rows($rekap_metode) > 0):
-                                            while($row = fetch_assoc($rekap_metode)): 
+                                        $rekap_metode_data = query($query_rekap_metode);
+                                        if(num_rows($rekap_metode_data) > 0):
+                                            while($row = fetch_assoc($rekap_metode_data)): 
                                         ?>
                                         <tr>
                                             <td class="ps-4 fw-medium text-dark">
@@ -280,8 +331,9 @@ $rekap_metode = query("SELECT metode_pembayaran,
                             <tbody class="border-top-0">
                                 <?php 
                                 $total_pendapatan_harian = 0;
-                                if(num_rows($transaksi_per_hari) > 0):
-                                    while($row = fetch_assoc($transaksi_per_hari)): 
+                                $transaksi_hari_data = query($query_transaksi_hari);
+                                if(num_rows($transaksi_hari_data) > 0):
+                                    while($row = fetch_assoc($transaksi_hari_data)): 
                                         $total_pendapatan_harian += $row['pendapatan'];
                                 ?>
                                 <tr>
@@ -303,6 +355,35 @@ $rekap_metode = query("SELECT metode_pembayaran,
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-3 px-4 border-top">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">Tampilkan:</span>
+                            <select class="form-select form-select-sm rounded-pill" style="width: 70px;" onchange="window.location.href='laporan.php?per_page_hari='+this.value+'&page_hari=1&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>'">
+                                <option value="5" <?php echo $limit_hari == 5 ? 'selected' : ''; ?>>5</option>
+                                <option value="10" <?php echo $limit_hari == 10 ? 'selected' : ''; ?>>10</option>
+                                <option value="15" <?php echo $limit_hari == 15 ? 'selected' : ''; ?>>15</option>
+                                <option value="20" <?php echo $limit_hari == 20 ? 'selected' : ''; ?>>20</option>
+                                <option value="50" <?php echo $limit_hari == 50 ? 'selected' : ''; ?>>50</option>
+                            </select>
+                        </div>
+                        <?php if($total_pages_hari > 1): ?>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0">
+                                <?php if($page_hari > 1): ?>
+                                <li class="page-item"><a class="page-link rounded-pill me-1" href="laporan.php?page_hari=<?php echo $page_hari-1; ?>&per_page_hari=<?php echo $limit_hari; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><i class="fas fa-chevron-left"></i></a></li>
+                                <?php endif; ?>
+                                <?php for($i = max(1, $page_hari-2); $i <= min($total_pages_hari, $page_hari+2); $i++): ?>
+                                <li class="page-item <?php echo $i == $page_hari ? 'active' : ''; ?>"><a class="page-link rounded-pill me-1" href="laporan.php?page_hari=<?php echo $i; ?>&per_page_hari=<?php echo $limit_hari; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><?php echo $i; ?></a></li>
+                                <?php endfor; ?>
+                                <?php if($page_hari < $total_pages_hari): ?>
+                                <li class="page-item"><a class="page-link rounded-pill" href="laporan.php?page_hari=<?php echo $page_hari+1; ?>&per_page_hari=<?php echo $limit_hari; ?>&start_date=<?php echo $start_date; ?>&end_date=<?php echo $end_date; ?>"><i class="fas fa-chevron-right"></i></a></li>
+                                <?php endif; ?>
+                            </ul>
+                        </nav>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
