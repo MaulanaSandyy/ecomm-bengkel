@@ -75,13 +75,21 @@ if (isset($_GET['search']) && !empty($_GET['search'])) {
     $where .= " AND (t.kode_transaksi LIKE '%$search%' OR u.nama_lengkap LIKE '%$search%')";
 }
 
-// Get all transactions
+// Pagination
+$limit = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
+$total_result = num_rows(query("SELECT t.* FROM transaksi t JOIN users u ON t.user_id = u.id $where"));
+$total_pages = ceil($total_result / $limit);
+
+// Get all transactions with pagination
 $transaksi = query("SELECT t.*, u.nama_lengkap, u.no_hp,
                    (SELECT COUNT(*) FROM detail_transaksi WHERE transaksi_id = t.id) as total_item
                    FROM transaksi t 
                    JOIN users u ON t.user_id = u.id 
                    $where
-                   ORDER BY t.created_at DESC");
+                   ORDER BY t.created_at DESC LIMIT $start, $limit");
 
 // Statistik Transaksi
 $total_transaksi = num_rows(query("SELECT * FROM transaksi"));
@@ -277,11 +285,11 @@ include '../includes/header.php';
                                             </span>
                                             
                                             <?php
-                                                $status = $row['status'] ?? 'dikemas';
+                                                $status = $row['status'] ?? 'pending';
                                                 $badge_colors = [
-                                                    'dikemas' => 'warning',
-                                                    'dikirim' => 'primary',
-                                                    'selesai' => 'success'
+                                                    'pending' => 'warning',
+                                                    'lunas' => 'success',
+                                                    'batal' => 'danger'
                                                 ];
                                                 $warna = $badge_colors[$status] ?? 'secondary';
                                             ?>
@@ -305,10 +313,10 @@ include '../includes/header.php';
                                                 </button>
 
                                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3">
-                                                    <?php if($row['status'] == 'dikemas'): ?>
+                                                    <?php if($row['status'] == 'pending'): ?>
                                                     <li>
                                                         <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#modalResi<?php echo $row['id']; ?>">
-                                                            <i class="fas fa-truck me-2 text-primary"></i>Input Resi
+                                                            <i class="fas fa-check-circle me-2 text-success"></i>Konfirmasi Bayar
                                                         </a>
                                                     </li>
                                                     <?php endif; ?>
@@ -342,6 +350,58 @@ include '../includes/header.php';
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="card-footer bg-white py-3 px-4 border-top">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">Tampilkan:</span>
+                            <select class="form-select form-select-sm rounded-pill" style="width: 80px;" onchange="window.location.href='transaksi.php?per_page='+this.value+'&page=1<?php echo isset($_GET['filter_status']) ? '&filter_status=' . $_GET['filter_status'] : ''; ?><?php echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; ?><?php echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; ?><?php echo isset($_GET['search']) ? '&search=' . $_GET['search'] : ''; ?>'">
+                                <option value="5" <?php echo $limit == 5 ? 'selected' : ''; ?>>5</option>
+                                <option value="10" <?php echo $limit == 10 ? 'selected' : ''; ?>>10</option>
+                                <option value="15" <?php echo $limit == 15 ? 'selected' : ''; ?>>15</option>
+                                <option value="20" <?php echo $limit == 20 ? 'selected' : ''; ?>>20</option>
+                                <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
+                                <option value="100" <?php echo $limit == 100 ? 'selected' : ''; ?>>100</option>
+                            </select>
+                            <span class="text-muted small">data per halaman</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small">Total: <?php echo $total_result; ?> data</span>
+                            <?php if($total_pages > 1): ?>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm mb-0">
+                                    <?php if($page > 1): ?>
+                                    <li class="page-item">
+                                        <a class="page-link rounded-pill me-1" href="transaksi.php?page=<?php echo $page-1; ?>&per_page=<?php echo $limit; ?><?php echo isset($_GET['filter_status']) ? '&filter_status=' . $_GET['filter_status'] : ''; ?><?php echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; ?><?php echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; ?><?php echo isset($_GET['search']) ? '&search=' . $_GET['search'] : ''; ?>">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
+                                    
+                                    <?php 
+                                    $start_page = max(1, $page - 2);
+                                    $end_page = min($total_pages, $page + 2);
+                                    for($i = $start_page; $i <= $end_page; $i++):
+                                    ?>
+                                    <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
+                                        <a class="page-link rounded-pill me-1" href="transaksi.php?page=<?php echo $i; ?>&per_page=<?php echo $limit; ?><?php echo isset($_GET['filter_status']) ? '&filter_status=' . $_GET['filter_status'] : ''; ?><?php echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; ?><?php echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; ?><?php echo isset($_GET['search']) ? '&search=' . $_GET['search'] : ''; ?>"><?php echo $i; ?></a>
+                                    </li>
+                                    <?php endfor; ?>
+                                    
+                                    <?php if($page < $total_pages): ?>
+                                    <li class="page-item">
+                                        <a class="page-link rounded-pill" href="transaksi.php?page=<?php echo $page+1; ?>&per_page=<?php echo $limit; ?><?php echo isset($_GET['filter_status']) ? '&filter_status=' . $_GET['filter_status'] : ''; ?><?php echo isset($_GET['start_date']) ? '&start_date=' . $_GET['start_date'] : ''; ?><?php echo isset($_GET['end_date']) ? '&end_date=' . $_GET['end_date'] : ''; ?><?php echo isset($_GET['search']) ? '&search=' . $_GET['search'] : ''; ?>">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -457,9 +517,8 @@ function exportToExcel(tableId, filename) {
 </script>
 
 <?php 
-mysqli_data_seek($transaksi, 0); 
-while($m = fetch_assoc($transaksi)): 
-    if($m['status'] == 'dikemas'):
+$modal_transaksi = query("SELECT * FROM transaksi WHERE status = 'pending' ORDER BY created_at DESC");
+while($m = fetch_assoc($modal_transaksi)): 
 ?>
 <div class="modal fade" id="modalResi<?php echo $m['id']; ?>" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -489,9 +548,6 @@ while($m = fetch_assoc($transaksi)):
         </div>
     </div>
 </div>
-<?php 
-    endif;
-endwhile; 
-?>
+<?php endwhile; ?>
 
 <?php include '../includes/footer.php'; ?>

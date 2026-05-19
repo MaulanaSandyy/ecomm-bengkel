@@ -140,8 +140,16 @@ if (isset($_GET['edit'])) {
     $edit_data = fetch_assoc($result);
 }
 
-// Get all sparepart
-$sparepart = query("SELECT * FROM sparepart ORDER BY id DESC");
+// Pagination
+$limit = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
+$total_result = num_rows(query("SELECT * FROM sparepart"));
+$total_pages = ceil($total_result / $limit);
+
+// Get all sparepart with pagination
+$sparepart = query("SELECT * FROM sparepart ORDER BY id DESC LIMIT $start, $limit");
 
 $title = "Kelola Sparepart";
 include '../includes/header.php';
@@ -266,14 +274,65 @@ include '../includes/header.php';
                                             <p>Belum ada data inventaris sparepart.</p>
                                         </td></tr>
                                         <?php endif; ?>
-                                    </tbody>
+</tbody>
                                 </table>
                             </div>
                         </div>
+                        
+                        <!-- Pagination -->
+                        <div class="card-footer bg-white py-3 px-4 border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Tampilkan:</span>
+                                    <select class="form-select form-select-sm rounded-pill" style="width: 80px;" onchange="window.location.href='sparepart.php?per_page='+this.value+'&page=1'">
+                                        <option value="5" <?php echo $limit == 5 ? 'selected' : ''; ?>>5</option>
+                                        <option value="10" <?php echo $limit == 10 ? 'selected' : ''; ?>>10</option>
+                                        <option value="15" <?php echo $limit == 15 ? 'selected' : ''; ?>>15</option>
+                                        <option value="20" <?php echo $limit == 20 ? 'selected' : ''; ?>>20</option>
+                                        <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
+                                        <option value="100" <?php echo $limit == 100 ? 'selected' : ''; ?>>100</option>
+                                    </select>
+                                    <span class="text-muted small">data per halaman</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Total: <?php echo $total_result; ?> data</span>
+                                    <?php if($total_pages > 1): ?>
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination pagination-sm mb-0">
+                                            <?php if($page > 1): ?>
+                                            <li class="page-item">
+                                                <a class="page-link rounded-pill me-1" href="sparepart.php?page=<?php echo $page-1; ?>&per_page=<?php echo $limit; ?>">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                            
+                                            <?php 
+                                            $start_page = max(1, $page - 2);
+                                            $end_page = min($total_pages, $page + 2);
+                                            for($i = $start_page; $i <= $end_page; $i++):
+                                            ?>
+                                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
+                                                <a class="page-link rounded-pill me-1" href="sparepart.php?page=<?php echo $i; ?>&per_page=<?php echo $limit; ?>"><?php echo $i; ?></a>
+                                            </li>
+                                            <?php endfor; ?>
+                                            
+                                            <?php if($page < $total_pages): ?>
+                                            <li class="page-item">
+                                                <a class="page-link rounded-pill" href="sparepart.php?page=<?php echo $page+1; ?>&per_page=<?php echo $limit; ?>">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </nav>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="col-lg-4" data-aos="fade-down">
+                    <div class="col-lg-4" data-aos="fade-down">
                     <div class="card border-0 shadow-sm rounded-4 sticky-lg-top" style="top: 100px; z-index: 10;">
                         <div class="card-header <?php echo $edit_data ? 'bg-warning' : 'bg-primary'; ?> text-white pt-4 pb-3 px-4 rounded-top-4 border-0">
                             <h5 class="fw-bold mb-0">

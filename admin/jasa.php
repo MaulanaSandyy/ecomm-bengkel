@@ -141,8 +141,16 @@ if (isset($_GET['edit'])) {
     $edit_data = fetch_assoc($result);
 }
 
-// Get all jasa
-$jasa = query("SELECT * FROM jasa ORDER BY id DESC");
+// Pagination
+$limit = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$start = ($page - 1) * $limit;
+
+$total_result = num_rows(query("SELECT * FROM jasa"));
+$total_pages = ceil($total_result / $limit);
+
+// Get all jasa with pagination
+$jasa = query("SELECT * FROM jasa ORDER BY id DESC LIMIT $start, $limit");
 
 $title = "Kelola Jasa";
 include '../includes/header.php';
@@ -232,6 +240,58 @@ include '../includes/header.php';
                                         <?php endif; ?>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Pagination -->
+                        <div class="card-footer bg-white py-3 px-4 border-top">
+                            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Tampilkan:</span>
+                                    <select class="form-select form-select-sm rounded-pill" style="width: 80px;" onchange="window.location.href='jasa.php?per_page='+this.value+'&page=1'">
+                                        <option value="5" <?php echo $limit == 5 ? 'selected' : ''; ?>>5</option>
+                                        <option value="10" <?php echo $limit == 10 ? 'selected' : ''; ?>>10</option>
+                                        <option value="15" <?php echo $limit == 15 ? 'selected' : ''; ?>>15</option>
+                                        <option value="20" <?php echo $limit == 20 ? 'selected' : ''; ?>>20</option>
+                                        <option value="50" <?php echo $limit == 50 ? 'selected' : ''; ?>>50</option>
+                                        <option value="100" <?php echo $limit == 100 ? 'selected' : ''; ?>>100</option>
+                                    </select>
+                                    <span class="text-muted small">data per halaman</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-muted small">Total: <?php echo $total_result; ?> data</span>
+                                    <?php if($total_pages > 1): ?>
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination pagination-sm mb-0">
+                                            <?php if($page > 1): ?>
+                                            <li class="page-item">
+                                                <a class="page-link rounded-pill me-1" href="jasa.php?page=<?php echo $page-1; ?>&per_page=<?php echo $limit; ?>">
+                                                    <i class="fas fa-chevron-left"></i>
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                            
+                                            <?php 
+                                            $start_page = max(1, $page - 2);
+                                            $end_page = min($total_pages, $page + 2);
+                                            for($i = $start_page; $i <= $end_page; $i++):
+                                            ?>
+                                            <li class="page-item <?php echo $i == $page ? 'active' : ''; ?>">
+                                                <a class="page-link rounded-pill me-1" href="jasa.php?page=<?php echo $i; ?>&per_page=<?php echo $limit; ?>"><?php echo $i; ?></a>
+                                            </li>
+                                            <?php endfor; ?>
+                                            
+                                            <?php if($page < $total_pages): ?>
+                                            <li class="page-item">
+                                                <a class="page-link rounded-pill" href="jasa.php?page=<?php echo $page+1; ?>&per_page=<?php echo $limit; ?>">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </nav>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         </div>
                     </div>
