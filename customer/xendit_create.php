@@ -45,8 +45,8 @@ $payload = [
     "amount" => $amount,
     "payer_email" => $user_email,
     "description" => "Pembayaran Bengkel Jaya Abadi - " . $user_name,
-    "success_redirect_url" => "http://localhost/ecomm-bengkel/customer/success.php?kode=$external_id",
-    "failure_redirect_url" => "http://localhost/ecomm-bengkel/customer/riwayat.php",
+    "success_redirect_url" => BASE_URL . "/customer/success.php?kode=$external_id",
+    "failure_redirect_url" => BASE_URL . "/customer/riwayat.php",
     "currency" => "IDR",
     "metadata" => [
         "kode_transaksi" => $external_id,

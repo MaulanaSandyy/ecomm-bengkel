@@ -1,10 +1,14 @@
 <?php
 include __DIR__ . '/env.php';
 
-$conn = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+$conn = @mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if (!$conn) {
-    die("Koneksi gagal: " . mysqli_connect_error());
+    if (APP_DEBUG) {
+        die("Koneksi database gagal: " . mysqli_connect_error() . "<br>Host: " . DB_HOST . ", User: " . DB_USER . ", DB: " . DB_NAME);
+    } else {
+        die("Terjadi kesalahan koneksi database. Silakan coba lagi nanti.");
+    }
 }
 
 // Fungsi untuk menjalankan query

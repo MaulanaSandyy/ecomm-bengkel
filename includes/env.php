@@ -41,4 +41,23 @@ define('XENDIT_CALLBACK_TOKEN', getenv('XENDIT_CALLBACK_TOKEN') ?: '');
 // Application Configuration
 define('APP_ENV', getenv('APP_ENV') ?: 'development');
 define('APP_DEBUG', getenv('APP_DEBUG') === 'true');
+
+// Auto-detect BASE_URL berdasarkan struktur direktori
+// Cocok untuk both lokal (XAMPP) dan hosting (InfinityFree)
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_FILENAME']));
+$docRoot = str_replace('\\', '/', $_SERVER['DOCUMENT_ROOT']);
+$relativeToRoot = str_replace($docRoot, '', $scriptDir);
+
+$subDirs = ['admin', 'owner', 'customer', 'pegawai', 'auth', 'callback'];
+$projectPath = $relativeToRoot;
+foreach ($subDirs as $dir) {
+    $dirWithSlash = '/' . $dir;
+    if (substr($relativeToRoot, -strlen($dirWithSlash)) === $dirWithSlash) {
+        $projectPath = substr($relativeToRoot, 0, -strlen($dirWithSlash));
+        break;
+    }
+}
+
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+define('BASE_URL', $protocol . '://' . $_SERVER['HTTP_HOST'] . rtrim($projectPath, '/'));
 ?>

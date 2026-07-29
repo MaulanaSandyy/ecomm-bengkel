@@ -108,8 +108,8 @@ $payload = [
     "amount" => $amount,
     "payer_email" => $user_email,
     "description" => "Pembayaran Bengkel Jaya Abadi - " . $user_name,
-    "success_redirect_url" => "http://localhost/ecomm-bengkel/customer/success.php?kode=$external_id",
-    "failure_redirect_url" => "http://localhost/ecomm-bengkel/customer/riwayat.php",
+    "success_redirect_url" => BASE_URL . "/customer/success.php?kode=$external_id",
+    "failure_redirect_url" => BASE_URL . "/customer/riwayat.php",
     "currency" => "IDR"
 ];
 
@@ -162,7 +162,7 @@ if ($mapping) {
 }
 
 // Tambahkan success_redirect_url untuk semua
-$payload['success_redirect_url'] = "http://localhost/ecomm-bengkel/customer/success.php?kode=$external_id";
+$payload['success_redirect_url'] = BASE_URL . "/customer/success.php?kode=$external_id";
 
 // Tambahan untuk E-Wallet tertentu
 if ($metode_dipilih == 'GoPay') {
